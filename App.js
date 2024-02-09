@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import {Button, StyleSheet, Text, View} from 'react-native';
-import ReportForm from "./Reporting/ReportForm";
+import ReportForm from "./components/Reporting/ReportForm";
 // import { createStackNavigator} from 'react-navigation';
 
 // import verCodeScreen from './PassReset';

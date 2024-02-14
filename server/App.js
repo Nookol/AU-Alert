@@ -2,6 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const AdminRouter = require('./routes/admin');
 const UserRouter = require('./routes/user');
+const MessageRouter = require('./routes/message');
+
+
 const client = require("./util/db.js")
 const UserModel = require("./models/user.js")
 
@@ -14,8 +17,10 @@ app.use(express.urlencoded({extended: true, limit: '100mb'}));
 app.use(express.json());
 app.use(cors());
 
-app.use(AdminRouter);
-app.use(UserRouter);
+//app.use(AdminRouter);
+app.use(MessageRouter);
+
+//app.use(UserRouter);
 
 const user = new UserModel();
 

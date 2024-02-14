@@ -9,9 +9,9 @@ class UserModel{
         this.createdAt = createdAt;
     }
 
-    testCreateNewUser = () => {
+    testMessage = () => {
         const query = client.query(`
-        INSERT INTO users (email, passwordhash, firstname, lastname, createdat)
+        INSERT INTO messages (email, passwordhash, firstname, lastname, createdat)
         VALUES ('Nick@blah.com', 'hashed_password', 'Nick', 'Albert', current_timestamp());
         `).then(results => console.log(results))
     }

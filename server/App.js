@@ -3,10 +3,12 @@ const cors = require('cors');
 const AdminRouter = require('./routes/admin');
 const UserRouter = require('./routes/user');
 const MessageRouter = require('./routes/message');
+const ReportRouter = require ('./routes/report');
 
 
 const client = require("./util/db.js")
 const UserModel = require("./models/user.js")
+const MyReportsModel = require ("./models/report")
 
 // require('dotenv').config({path:__dirname+'/.env'})
 const app = express();
@@ -19,6 +21,7 @@ app.use(cors());
 
 //app.use(AdminRouter);
 app.use(MessageRouter);
+app.use(ReportRouter);
 
 //app.use(UserRouter);
 

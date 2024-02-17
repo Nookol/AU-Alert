@@ -55,7 +55,6 @@ const styles = StyleSheet.create( {
     },
     scrollContainer:{
         paddingBottom: 50
-
     },
 
     mainBox: {

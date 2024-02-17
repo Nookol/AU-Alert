@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TextInput, Button, Alert, ActivityIndicator } f
 import { useNavigation } from '@react-navigation/native';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from "@/auth/firebase"; // Assuming this is your correct Firebase initialization
-
+import colors from "@/constants/Colors"
 const Login = () => {
 
     const navigation = useNavigation();
@@ -30,7 +30,7 @@ const Login = () => {
             const success = await trySignIn();
             setLoading(false);
             if (success) {
-                navigation.navigate('test/index')
+                navigation.navigate('Home')
             } else {
                 Alert.alert('Login Failed', 'Invalid email or password.');
             }
@@ -58,6 +58,7 @@ const Login = () => {
             />
             <Button title="Login" onPress={handleLogin} />
             <Button title="Register" onPress={()=>{navigation.navigate('Register')}} />
+            <Button title="Bypass to app" onPress={()=>{navigation.navigate('Home')}} />
             {loading && <ActivityIndicator size="large" color="#0000ff" />}
         </View>
     );
@@ -68,9 +69,10 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#73a3e0',
+        backgroundColor: colors.main.background,
     },
     title: {
+        color: colors.main.text,
         fontSize: 40,
         paddingBottom: 50,
     },

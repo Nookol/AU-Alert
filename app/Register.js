@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, TextInput, Button, Alert, ActivityIndicator } f
 import { useNavigation } from '@react-navigation/native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../auth/firebase';
+import colors from '../constants/Colors'
 
 const Register = () => {
     const navigation = useNavigation();
@@ -62,7 +63,7 @@ const Register = () => {
         if (registration.email && registration.password && registration.confirmPassword === registration.password) {
             setLoading(true);
             try {
-                const userCredential = await createUserWithEmailAndPassword(auth, registration.email, registration.password);
+                const userCredential = await createUserWithEmailAndPassword(auth, registration.email, registration.password)
                 console.log('User registered successfully');
                 navigation.navigate('Home');
             } catch (error) {
@@ -117,6 +118,7 @@ const Register = () => {
                 onChangeText={handlePhoneChange}
             />
             <Button title="Register" onPress={handleRegister} />
+            <Button title="Back to Login" onPress={()=>{navigation.navigate('index')}} />
             {loading && <ActivityIndicator size="large" color="#0000ff" />}
         </View>
     );
@@ -127,9 +129,10 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#73a3e0',
+        backgroundColor: colors.main.background,
     },
     title: {
+        color : colors.main.text,
         fontSize: 40,
         paddingBottom: 50,
     },

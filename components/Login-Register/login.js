@@ -1,36 +1,94 @@
-import {StyleSheet, View, Text, TextInput, Button} from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from "@/auth/firebase"; // Assuming this is your correct Firebase initialization
 
-export default function Login() {
+const Login = () => {
+
+    const navigation = useNavigation();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const trySignIn = async () => {
+        try {
+            let userCredential = await signInWithEmailAndPassword(auth, email, password);
+            console.log(userCredential.user.uid); // Access the user's UID
+            console.log(userCredential); // Access the user's UID
+            console.log('User signed in successfully');
+            return true;
+        } catch (error) {
+            console.error('Error signing in:', error.message);
+            return false;
+        }
+    };
+
+    const handleLogin = async () => {
+        if (email !== '' && password !== '') {
+            setLoading(true);
+            const success = await trySignIn();
+            setLoading(false);
+            if (success) {
+                navigation.navigate('Home')
+            } else {
+                Alert.alert('Login Failed', 'Invalid email or password.');
+            }
+        } else {
+            Alert.alert('Login Failed', 'Please enter valid email and password.');
+        }
+    };
+
+    const handleRegister = async () => {
+        if (email !== '' && password !== '') {
+            setLoading(true);
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                console.log('User registered successfully');
+                navigation.navigate('Home');
+            } catch (error) {
+                console.error('Error registering user:', error.message);
+                Alert.alert('Registration Failed', error.message);
+            }
+            setLoading(false);
+        } else {
+            Alert.alert('Registration Failed', 'Please enter valid email and password.');
+        }
+    };
+
     return (
         <View style={styles.container}>
-            <View>
-                <Text style={{fontSize: 40, paddingBottom: 50}}> Login </Text>
-            </View>
-            <View>
-                <TextInput style={styles.textBox} placeholder={"Email"} placeholderTextColor={'gray'}/>
-            </View>
-            <View>
-                <TextInput style={styles.textBox} placeholder={"Password"} placeholderTextColor={'gray'}/>
-            </View>
-            <Button title={"Login"}></Button>
-            <Button title={"Register"}></Button>
-            <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)"/>
+            <Text style={styles.title}>Login</Text>
+            <TextInput
+                style={styles.textBox}
+                placeholder="Email"
+                placeholderTextColor="gray"
+                onChangeText={setEmail}
+            />
+            <TextInput
+                style={styles.textBox}
+                placeholder="Password"
+                placeholderTextColor="gray"
+                secureTextEntry
+                onChangeText={setPassword}
+            />
+            <Button title="Login" onPress={handleLogin} />
+            <Button title="Register" onPress={handleRegister} />
+            {loading && <ActivityIndicator size="large" color="#0000ff" />}
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: "#73a3e0"
+        backgroundColor: '#73a3e0',
     },
     title: {
-        fontSize: 15,
-    },
-    separator: {
-        marginVertical: 100,
+        fontSize: 40,
+        paddingBottom: 50,
     },
     textBox: {
         backgroundColor: 'lightgray',
@@ -38,6 +96,8 @@ const styles = StyleSheet.create({
         margin: 5,
         width: 200,
         borderRadius: 5,
-        color: '#000'
-    }
+        color: '#000',
+    },
 });
+
+export default Login;

@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../auth/firebase';
+import React, {useState} from 'react';
+import {StyleSheet, View, Text, TextInput, Button, Alert, ActivityIndicator} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {createUserWithEmailAndPassword} from 'firebase/auth';
+import {auth} from '../auth/firebase';
 import colors from '../constants/Colors'
+import axios from "axios";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const Register = () => {
     const navigation = useNavigation();
@@ -14,7 +17,8 @@ const Register = () => {
         confirmPassword: null,
         fName: null,
         lName: null,
-        phone: null
+        phone: null,
+        token : null
     });
 
     const handleEmailChange = (text) => {
@@ -59,11 +63,23 @@ const Register = () => {
         }));
     };
 
+    const storeToken = async (token) => {
+        try {
+            await AsyncStorage.setItem('@userToken', token);
+        } catch (error) {
+            console.error('Error storing token:', error);
+        }
+    };
+
     const handleRegister = async () => {
+        let apiUrl = "http://localhost:3000/register";
         if (registration.email && registration.password && registration.confirmPassword === registration.password) {
             setLoading(true);
             try {
-                const userCredential = await createUserWithEmailAndPassword(auth, registration.email, registration.password)
+                const userCredential = await createUserWithEmailAndPassword(auth, registration.email, registration.password);
+                const sessionToken = userCredential._tokenResponse['idToken']
+                await storeToken(sessionToken);
+                const response = await axios.post(apiUrl, {...registration, token: sessionToken})
                 console.log('User registered successfully');
                 navigation.navigate('Home');
             } catch (error) {
@@ -75,6 +91,7 @@ const Register = () => {
             Alert.alert('Registration Failed', 'Please enter valid email and password.');
         }
     };
+
 
     return (
         <View style={styles.container}>
@@ -117,9 +134,11 @@ const Register = () => {
                 placeholderTextColor="gray"
                 onChangeText={handlePhoneChange}
             />
-            <Button title="Register" onPress={handleRegister} />
-            <Button title="Back to Login" onPress={()=>{navigation.navigate('index')}} />
-            {loading && <ActivityIndicator size="large" color="#0000ff" />}
+            <Button title="Register" onPress={handleRegister}/>
+            <Button title="Back to Login" onPress={() => {
+                navigation.navigate('index')
+            }}/>
+            {loading && <ActivityIndicator size="large" color="#0000ff"/>}
         </View>
     );
 };
@@ -132,7 +151,7 @@ const styles = StyleSheet.create({
         backgroundColor: colors.main.background,
     },
     title: {
-        color : colors.main.text,
+        color: colors.main.text,
         fontSize: 40,
         paddingBottom: 50,
     },

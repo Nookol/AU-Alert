@@ -1,43 +1,63 @@
-const express = require('express');
-const cors = require('cors');
-const AdminRouter = require('./routes/admin');
-const UserRouter = require('./routes/user');
-const MessageRouter = require('./routes/message');
-const ReportRouter = require ('./routes/report');
-
-
-const client = require("./util/db.js")
-const UserModel = require("./models/user.js")
-const MyReportsModel = require ("./models/report")
-
-// require('dotenv').config({path:__dirname+'/.env'})
+const express = require("express");
+const cors = require("cors");
+const MessageRouter = require("./routes/message");
+const ReportRouter = require("./routes/report");
+const client = require("./util/db.js");
+const UserModel = require("./models/user.js");
+const MyReportsModel = require("./models/report");
 const app = express();
 const port = process.env.PORT || 3000;
+const admin = require("firebase-admin");
 
-app.use(express.json({limit: '50mb'}));
-app.use(express.urlencoded({extended: true, limit: '100mb'}));
+// Initialize Firebase Admin SDK
+const serviceAccount = require("./au-report-bbe7d-firebase-adminsdk-rm0f2-5424c5388d.json");
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "100mb" }));
 app.use(express.json());
 app.use(cors());
 
-//app.use(AdminRouter);
 app.use(MessageRouter);
 app.use(ReportRouter);
 
-//app.use(UserRouter);
+// Middleware to verify Firebase ID token
+const verifyToken = (req, res, next) => {
+  const idToken = req.headers.authorization;
 
-const user = new UserModel();
+  admin
+      .auth()
+      .verifyIdToken(idToken)
+      .then((decodedToken) => {
+        req.user = decodedToken; // Adding decoded user information to the request object
+        next();
+      })
+      .catch((error) => {
+        console.error("Error while verifying Firebase ID token:", error);
+        res.status(403).send("Unauthorized");
+      });
+};
 
-app.get('/test', async (req, res) => {
-    const query = await client.query(`SELECT * FROM users;`)
-        .then(results => res.send((results["rows"])))
-        .then(() => {
-            console.log("Success")
-        })
-        .catch(e => {
-            console.log(e.message)
-        })
-})
+app.post("/register", async (req, res) => {
+  const email = req.body.email;
+  const first = req.body.fName;
+  const last = req.body.lName;
+  const phone = req.body.phone;
+  const token = req.body.token;
+  const user = new UserModel(email, first, last, phone, token);
 
-app.listen(port, '0.0.0.0', () => {
-    console.log(`Running on ${port}`);
+  try {
+    await user.registerNewUser();
+    console.log("New User Created!");
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Error registering user:", error);
+    res.sendStatus(400);
+  }
+});
+
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Running on ${port}`);
 });

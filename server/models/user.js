@@ -1,22 +1,33 @@
-const client = require('../util/db')
+const client = require("../util/db");
 
-class UserModel{
-    constructor(email, passwordHash, firstName, lastName, createdAt) {
-        this.email = email;
-        this.passwordHash = passwordHash;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.createdAt = createdAt;
-    }
+class UserModel {
+  constructor(email, firstName, lastName, phone, token) {
+    this.email = email;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.phone = phone;
+    this.token = token;
+  }
 
-    testMessage = () => {
-        const query = client.query(`
-        INSERT INTO messages (email, passwordhash, firstname, lastname, createdat)
-        VALUES ('Nick@blah.com', 'hashed_password', 'Nick', 'Albert', current_timestamp());
-        `).then(results => console.log(results))
-    }
+  registerNewUser = async () => {
+    const query = {
+      text: `
+            INSERT INTO users (email, firstname, lastname, phone, token)
+            VALUES ($1, $2, $3, $4, $5)
+            `,
+      values: [
+        this.email,
+        this.firstName,
+        this.lastName,
+        this.phone,
+        this.token,
+      ],
+    };
+    client
+      .query(query)
+      .then((results) => console.log(results))
+      .catch((error) => console.error("Error inserting new user:", error));
+  };
 }
 
 module.exports = UserModel;
-
-//const user1 = new User('user1@example.com', '[hashed_password_1]', 'John', 'Doe', new Date());

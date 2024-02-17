@@ -36,7 +36,6 @@ app.get('/test', async (req, res) => {
         .catch(e => {
             console.log(e.message)
         })
-    // user.testCreateNewUser()
 })
 
 app.listen(port, '0.0.0.0', () => {

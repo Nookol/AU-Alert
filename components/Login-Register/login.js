@@ -30,7 +30,7 @@ const Login = () => {
             const success = await trySignIn();
             setLoading(false);
             if (success) {
-                navigation.navigate('Home')
+                navigation.navigate('test/index')
             } else {
                 Alert.alert('Login Failed', 'Invalid email or password.');
             }
@@ -39,22 +39,6 @@ const Login = () => {
         }
     };
 
-    const handleRegister = async () => {
-        if (email !== '' && password !== '') {
-            setLoading(true);
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                console.log('User registered successfully');
-                navigation.navigate('Home');
-            } catch (error) {
-                console.error('Error registering user:', error.message);
-                Alert.alert('Registration Failed', error.message);
-            }
-            setLoading(false);
-        } else {
-            Alert.alert('Registration Failed', 'Please enter valid email and password.');
-        }
-    };
 
     return (
         <View style={styles.container}>
@@ -73,7 +57,7 @@ const Login = () => {
                 onChangeText={setPassword}
             />
             <Button title="Login" onPress={handleLogin} />
-            <Button title="Register" onPress={handleRegister} />
+            <Button title="Register" onPress={()=>{navigation.navigate('Register')}} />
             {loading && <ActivityIndicator size="large" color="#0000ff" />}
         </View>
     );

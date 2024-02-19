@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, Button} from "react-native";
+import {View, Text, StyleSheet, Button,SafeAreaView, ScrollView} from "react-native";
 import DropdownComponent from "./locationDropdown";
 import DropdownLocationType from "./locationDropdown";
 import TextInputExample from "./ProblemTitle";
@@ -6,10 +6,9 @@ import ProblemDescBox from "./DescribeTextBox";
 import {useState} from "react";
 import SubmitProblem from "./SubmitReport";
 
-
-
-export default function ReportForm(){
+export default function ReportForm() {
     return (
+<<<<<<< Updated upstream
         <View style={styles.background}>
             <Text style={styles.title}> Report A Problem </Text>
             <Text style={styles.text}> Problem Title: </Text>
@@ -20,6 +19,22 @@ export default function ReportForm(){
             <ProblemDescBox/>
             <SubmitProblem/>
         </View>
+=======
+        <SafeAreaView style={styles.background}>
+            <ScrollView>
+                <View style={styles.background}>
+                    <Text style={styles.title}> Report A Problem </Text>
+                    <Text style={styles.text}> Problem Title: </Text>
+                    <ProblemTitleBox/>
+                    <Text style={styles.text}> Location: </Text>
+                    <DropdownComponent/>
+                    <Text style={styles.text}> Describe Your Problem: </Text>
+                    <ProblemDescBox/>
+                    <SubmitProblem/>
+                </View>
+            </ScrollView>
+        </SafeAreaView>
+>>>>>>> Stashed changes
     );
 }
 
@@ -39,6 +54,5 @@ const styles = StyleSheet.create({
         padding: 5,
         color: '#ffffff',
         // fontSize: 100,
-
     }
 });

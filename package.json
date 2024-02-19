@@ -9,11 +9,9 @@
     "web": "expo start --web"
   },
   "dependencies": {
-<<<<<<< Updated upstream
     "@react-navigation/native": "^6.1.10",
     "expo": "^50.0.6",
     "expo-status-bar": "~1.11.1",
-=======
     "@expo/vector-icons": "^14.0.0",
     "@react-native-async-storage/async-storage": "^1.22.0",
     "@react-navigation/native": "^6.0.2",
@@ -31,7 +29,6 @@
     "firebase": "^10.8.0",
     "firebase-admin": "^12.0.0",
     "pg": "^8.11.3",
->>>>>>> Stashed changes
     "react": "18.2.0",
     "react-native": "0.73.2",
     "react-native-element-dropdown": "^2.10.1",

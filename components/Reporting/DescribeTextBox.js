@@ -1,8 +1,8 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {SafeAreaView, StyleSheet, TextInput} from 'react-native';
 
 const ProblemDescBox = () => {
-    const [text, onChangeText] = React.useState('');
+    const [text, onChangeText] = useState('');
 
     return (
         <SafeAreaView>

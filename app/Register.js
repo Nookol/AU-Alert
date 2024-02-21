@@ -7,7 +7,6 @@ import colors from '../constants/Colors'
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 const Register = () => {
     const navigation = useNavigation();
     const [loading, setLoading] = useState(false);

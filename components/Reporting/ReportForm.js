@@ -5,6 +5,7 @@ import ProblemTitleBox from "./ProblemTitle";
 import ProblemDescBox from "./DescribeTextBox";
 import {useState} from "react";
 import SubmitProblem from "./SubmitReport";
+import colors from "@/constants/Colors"
 
 export default function ReportForm() {
     return (
@@ -27,7 +28,7 @@ export default function ReportForm() {
 
 const styles = StyleSheet.create({
     background: {
-        backgroundColor: "#00008b",
+        backgroundColor: colors.main.background,
     },
     title: {
         fontSize: 40,

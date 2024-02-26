@@ -6,8 +6,11 @@ import {auth} from '../auth/firebase';
 import colors from '../constants/Colors'
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {isAuEmail} from "../components/Login-Register/userEmailFilter";
+
 
 const Register = () => {
+
     const navigation = useNavigation();
     const [loading, setLoading] = useState(false);
     const [registration, setRegistration] = useState({
@@ -19,6 +22,31 @@ const Register = () => {
         phone: null,
         token : null
     });
+
+    const handleRegister = async () => {
+        if (!isAuEmail(registration.email, registration.fName, registration.lName)) {
+            alert("Invalid Email: must be an Aurora.edu authorized email.")
+            return;
+        }
+        let apiUrl = "http://localhost:3000/register";
+        if (registration.email && registration.password && registration.confirmPassword === registration.password) {
+            setLoading(true);
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, registration.email, registration.password);
+                const sessionToken = userCredential._tokenResponse['idToken']
+                await storeToken(sessionToken);
+                const response = await axios.post(apiUrl, {...registration, token: sessionToken})
+                console.log('User registered successfully');
+                navigation.navigate('Home');
+            } catch (error) {
+                console.error('Error registering user:', error.message);
+                Alert.alert('Registration Failed', error.message);
+            }
+            setLoading(false);
+        } else {
+            Alert.alert('Registration Failed', 'Please enter valid email and password.');
+        }
+    };
 
     const handleEmailChange = (text) => {
         setRegistration(prevState => ({
@@ -69,28 +97,6 @@ const Register = () => {
             console.error('Error storing token:', error);
         }
     };
-
-    const handleRegister = async () => {
-        let apiUrl = "http://localhost:3000/register";
-        if (registration.email && registration.password && registration.confirmPassword === registration.password) {
-            setLoading(true);
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, registration.email, registration.password);
-                const sessionToken = userCredential._tokenResponse['idToken']
-                await storeToken(sessionToken);
-                const response = await axios.post(apiUrl, {...registration, token: sessionToken})
-                console.log('User registered successfully');
-                navigation.navigate('Home');
-            } catch (error) {
-                console.error('Error registering user:', error.message);
-                Alert.alert('Registration Failed', error.message);
-            }
-            setLoading(false);
-        } else {
-            Alert.alert('Registration Failed', 'Please enter valid email and password.');
-        }
-    };
-
 
     return (
         <View style={styles.container}>

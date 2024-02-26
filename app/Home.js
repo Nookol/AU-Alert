@@ -4,9 +4,7 @@ import ReportForm from "../components/Reporting/ReportForm";
 import MainMessage from "../components/Messaging/MainMessage";
 import { StyleSheet, View } from "react-native";
 import MyReports from "../components/Reporting/MyReports";
-
 const Tab = createBottomTabNavigator();
-
 export default function Home() {
   return (
     <View style={styles.container}>

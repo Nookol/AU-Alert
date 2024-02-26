@@ -38,7 +38,7 @@ app.get('/location/:id', (req, res) => {
         }
     ];
     const id = req.params.id
-    const send = LOCATIONS.filter(e => e.id === id )
+    const send = LOCATIONS.filter(e => e.id == id )
     res.send(JSON.stringify(send))
 })
 

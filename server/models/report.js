@@ -9,19 +9,17 @@ class MyReportsModel {
         this.title = title;
         this.description = description;
     }
-
-    // static runGetReport() {
-    //     return client.execute(`
-    //     SELECT image, location, title, description
-    //         FROM reports;`
-    //     )
+    // testGetNewReport = () => {
+    //     const query = client.query (`
+    //     INSERT INTO reports (image, location, title, description)
+    //     VALUES ('coffee spill', 'Stephens 103', 'coffee spill in stephens', 'small coffee spill');
+    //     `).then(results => console.log(results))
     // }
-    testGetNewReport = () => {
-        const query = client.query (`
-        INSERT INTO reports (image, location, title, description)
-        VALUES ('coffee spill', 'Stephens 103', 'coffee spill in stephens', 'small coffee spill');
-        `).then(results => console.log(results))
+
+    showMyReport = () => {
+
     }
+
 }
 
 module.exports = MyReportsModel;

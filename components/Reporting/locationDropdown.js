@@ -2,7 +2,9 @@ import React, {useEffect, useState} from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import LOCATIONS from "./locations";
+import axios from 'axios';
+import selectCountry from "react-native-element-dropdown/src/components/SelectCountry";
+// var axios = require('axios');
 
 const locationData = [
     // { label: 'Building', value: '1' },
@@ -48,6 +50,35 @@ const locationSpecifics = [
 const DropdownComponent = () => {
     const [value, setValue] = useState(null);
     const [isFocus, setIsFocus] = useState(false);
+
+    // useEffect(() => {
+    //
+    //     var config = {
+    //         method: 'get',
+    //         url: 'https://api.countrystatecity.in/v1/countries',
+    //         headers: {
+    //             'X-CSCAPI-KEY': 'API_KEY'
+    //         }
+    //     };
+    //
+    //     axios(config)
+    //         .then(function (response) {
+    //             console.log(JSON.stringify(response.data));
+    //             var count = Object.keys(response.data).length;
+    //             var countryArray = [];
+    //             for ( var i = 0; i < count; i++){
+    //                 countryArray.push ({
+    //                     value: response.data[i].iso2,
+    //                     label: response.data[i].name,
+    //                 });
+    //             }
+    //             setCountryData(countryArray);
+    //         })
+    //         .catch(function (error) {
+    //             console.log(error);
+    //         });
+    //
+    // }, []);
 
     return (
         <View style={styles.container}>

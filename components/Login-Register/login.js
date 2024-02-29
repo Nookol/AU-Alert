@@ -1,0 +1,90 @@
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { signInWithEmailAndPassword} from 'firebase/auth';
+import { auth } from "@/auth/firebase";
+import colors from "@/constants/Colors"
+import * as SecureStore from 'expo-secure-store';
+
+const Login = () => {
+
+    const navigation = useNavigation();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const trySignIn = async () => {
+        try {
+            let userCredential = await signInWithEmailAndPassword(auth, email, password);
+            console.log(userCredential.user.uid);
+            console.log('User signed in successfully');
+            await SecureStore.setItemAsync('sessionToken',userCredential._tokenResponse["idToken"]);
+            return true;
+        } catch (error) {
+            console.error('Error signing in:', error.message);
+            return false;
+        }
+    };
+
+    const handleLogin = async () => {
+        if (email !== '' && password !== '') {
+            setLoading(true);
+            const success = await trySignIn();
+            setLoading(false);
+            if (success) {
+                navigation.navigate('Home')
+            } else {
+                Alert.alert('Login Failed', 'Invalid email or password.');
+            }
+        } else {
+            Alert.alert('Login Failed', 'Please enter valid email and password.');
+        }
+    };
+
+    return (
+        <View style={styles.container}>
+            <Text style={styles.title}>Login</Text>
+            <TextInput
+                style={styles.textBox}
+                placeholder="Email"
+                placeholderTextColor="gray"
+                onChangeText={setEmail}
+            />
+            <TextInput
+                style={styles.textBox}
+                placeholder="Password"
+                placeholderTextColor="gray"
+                secureTextEntry
+                onChangeText={setPassword}
+            />
+            <Button title="Login" onPress={handleLogin} />
+            <Button title="Register" onPress={()=>{navigation.navigate('Register')}} />
+            <Button title="Bypass to app" onPress={()=>{navigation.navigate('Home')}} />
+            {loading && <ActivityIndicator size="large" color="#0000ff" />}
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.main.background,
+    },
+    title: {
+        color: colors.main.text,
+        fontSize: 40,
+        paddingBottom: 50,
+    },
+    textBox: {
+        backgroundColor: 'lightgray',
+        padding: 10,
+        margin: 5,
+        width: 200,
+        borderRadius: 5,
+        color: '#000',
+    },
+});
+
+export default Login;

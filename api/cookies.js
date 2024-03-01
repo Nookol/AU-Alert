@@ -1,0 +1,27 @@
+import * as SecureStore from 'expo-secure-store';
+
+export const setCookie = async (key, value) => {
+    try {
+        await SecureStore.setItemAsync(key, value);
+        console.log('Cookie set successfully!');
+    } catch (error) {
+        console.log('Error setting cookie:', error);
+    }
+}
+
+export const getCookie = async (key) => {
+    try {
+        const value = await SecureStore.getItemAsync(key);
+        if (value) {
+            console.log('Cookie value:', value);
+            return value;
+        } else {
+            console.log('Cookie not found');
+            return null;
+        }
+    } catch (error) {
+        console.log('Error getting cookie:', error);
+        return null;
+    }
+}
+

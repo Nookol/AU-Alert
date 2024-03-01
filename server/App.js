@@ -2,16 +2,12 @@ const express = require("express");
 const cors = require("cors");
 const MessageRouter = require("./routes/message");
 const ReportRouter = require("./routes/report");
-const client = require("./util/db.js");
 const UserModel = require("./models/user.js");
-const MyReportsModel = require("./models/report");
 const app = express();
 const port = process.env.PORT || 3000;
 const admin = require("firebase-admin");
-const locationTest = require('../components/Reporting/locations')
-
-// Initialize Firebase Admin SDK
 const serviceAccount = require("./au-report-bbe7d-firebase-adminsdk-rm0f2-5424c5388d.json");
+
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
 });
@@ -24,33 +20,13 @@ app.use(cors());
 app.use(MessageRouter);
 app.use(ReportRouter);
 
-app.get('/location/:id', (req, res) => {
-    const LOCATIONS = [
-        {
-            id: 1,
-            name: 'Stephens Hall',
-            code: 'stph'
-        },
-        {
-            id: 2,
-            name: 'Dunham Hall',
-            code: 'dunh'
-        }
-    ];
-    const id = req.params.id
-    const send = LOCATIONS.filter(e => e.id == id )
-    res.send(JSON.stringify(send))
-})
-
-// Middleware to verify Firebase ID token
 const verifyToken = (req, res, next) => {
     const idToken = req.headers.authorization;
-
     admin
         .auth()
         .verifyIdToken(idToken)
         .then((decodedToken) => {
-            req.user = decodedToken; // Adding decoded user information to the request object
+            req.user = decodedToken;
             next();
         })
         .catch((error) => {
@@ -77,6 +53,17 @@ app.post("/register", async (req, res) => {
     }
 });
 
+// Public route (does not require authentication)
+app.get("/public", (req, res) => {
+    res.send("This route is public and does not require authentication.");
+});
+
+// Private route (requires authentication)
+app.get("/private", verifyToken, (req, res) => {
+    console.log(req)
+    res.send(`Welcome user ${req.user.email}, this route is protected.`);
+});
+
 app.listen(port, "0.0.0.0", () => {
-    console.log(`Running on ${port}`);
+    console.log(`Running on http://localhost:${port}`);
 });

@@ -7,6 +7,7 @@ import colors from '../constants/Colors'
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {isAuEmail} from "../components/Login-Register/userEmailFilter";
+import {setCookie} from "../api/cookies";
 
 
 const Register = () => {
@@ -34,7 +35,9 @@ const Register = () => {
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, registration.email, registration.password);
                 const sessionToken = userCredential._tokenResponse['idToken']
-                await storeToken(sessionToken);
+                await setCookie("sessionToken", sessionToken);
+                // await setCookie("firstName", registration.fName);
+                // await setCookie("lastName", registration.lName);
                 const response = await axios.post(apiUrl, {...registration, token: sessionToken})
                 console.log('User registered successfully');
                 navigation.navigate('Home');
@@ -48,47 +51,27 @@ const Register = () => {
         }
     };
 
-    const handleEmailChange = (text) => {
+    //
+    // Input Handlers
+    //
+    const handleInputChange = (field, text) => {
         setRegistration(prevState => ({
             ...prevState,
-            email: text
+            [field]: text
         }));
     };
 
-    const handlePasswordChange = (text) => {
-        setRegistration(prevState => ({
-            ...prevState,
-            password: text
-        }));
-    };
+    const handleEmailChange = (text) => {handleInputChange('email', text);};
 
-    const handleConfirmPasswordChange = (text) => {
-        setRegistration(prevState => ({
-            ...prevState,
-            confirmPassword: text
-        }));
-    };
+    const handlePasswordChange = (text) => {handleInputChange('password', text);};
 
-    const handleLNameChange = (text) => {
-        setRegistration(prevState => ({
-            ...prevState,
-            lName: text
-        }));
-    };
+    const handleConfirmPasswordChange = (text) => {handleInputChange('confirmPassword', text);};
 
-    const handleFNameChange = (text) => {
-        setRegistration(prevState => ({
-            ...prevState,
-            fName: text
-        }));
-    };
+    const handleLNameChange = (text) => {handleInputChange('lName', text);};
 
-    const handlePhoneChange = (text) => {
-        setRegistration(prevState => ({
-            ...prevState,
-            phone: text
-        }));
-    };
+    const handleFNameChange = (text) => {handleInputChange('fName', text);};
+
+    const handlePhoneChange = (text) => {handleInputChange('phone', text);};
 
     const storeToken = async (token) => {
         try {
@@ -97,6 +80,7 @@ const Register = () => {
             console.error('Error storing token:', error);
         }
     };
+
 
     return (
         <View style={styles.container}>

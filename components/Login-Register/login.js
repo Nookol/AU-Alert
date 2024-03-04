@@ -8,6 +8,8 @@ import axios from "axios";
 import colors from "@/constants/Colors";
 import saveUserData from "./../Messaging/saveUserData/saveUserData";
 import portNumber from '@/Portnumber/portNumber';
+import {setCookie} from "@/api/cookies";
+
 const Login = () => {
     const navigation = useNavigation();
 
@@ -19,8 +21,9 @@ const Login = () => {
     const trySignIn = async () => {
         try {
             let userCredential = await signInWithEmailAndPassword(auth, email, password);
-            // console.log(userCredential.user.uid); // Access the user's UID
-            // console.log(userCredential); // Access the user's UID
+            console.log(userCredential);
+            const sessionToken = userCredential._tokenResponse['idToken']
+            await setCookie("sessionToken", sessionToken);
             console.log('User signed in successfully');
             saveUserData(userCredential._tokenResponse.email);
            // userData(userCredential._tokenResponse.email);
@@ -63,10 +66,14 @@ const Login = () => {
                 secureTextEntry
                 onChangeText={setPassword}
             />
-            <Button title="Login" onPress={handleLogin} />
-            <Button title="Register" onPress={()=>{navigation.navigate('Register')}} />
-            <Button title="Bypass to app" onPress={()=>{navigation.navigate('Home')}} />
-            {loading && <ActivityIndicator size="large" color="#0000ff" />}
+            <Button title="Login" onPress={handleLogin}/>
+            <Button title="Register" onPress={() => {
+                navigation.navigate('Register')
+            }}/>
+            <Button title="Bypass to app" onPress={() => {
+                navigation.navigate('Home')
+            }}/>
+            {loading && <ActivityIndicator size="large" color="#0000ff"/>}
         </View>
     );
 };

@@ -8,10 +8,13 @@ import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import portNumber from '../Portnumber/portNumber';
 import saveUserData from "../components/Messaging/saveUserData/saveUserData";
+import {isAuEmail} from "../components/Login-Register/userEmailFilter";
+import {setCookie} from "../api/cookies";
 
 
 
 const Register = () => {
+
     const navigation = useNavigation();
     const [loading, setLoading] = useState(false);
     const [registration, setRegistration] = useState({
@@ -24,66 +27,21 @@ const Register = () => {
         token : null
     });
 
-    const handleEmailChange = (text) => {
-        setRegistration(prevState => ({
-            ...prevState,
-            email: text
-        }));
-    };
-
-    const handlePasswordChange = (text) => {
-        setRegistration(prevState => ({
-            ...prevState,
-            password: text
-        }));
-    };
-
-    const handleConfirmPasswordChange = (text) => {
-        setRegistration(prevState => ({
-            ...prevState,
-            confirmPassword: text
-        }));
-    };
-
-    const handleLNameChange = (text) => {
-        setRegistration(prevState => ({
-            ...prevState,
-            lName: text
-        }));
-    };
-
-    const handleFNameChange = (text) => {
-        setRegistration(prevState => ({
-            ...prevState,
-            fName: text
-        }));
-    };
-
-    const handlePhoneChange = (text) => {
-        setRegistration(prevState => ({
-            ...prevState,
-            phone: text
-        }));
-    };
-
-    const storeToken = async (token) => {
-        try {
-            await AsyncStorage.setItem('@userToken', token);
-        } catch (error) {
-            console.error('Error storing token:', error);
-        }
-    };
-
     const handleRegister = async () => {
-        let apiUrl = `http://${portNumber}:3000/register`;
 
+        if (!isAuEmail(registration.email, registration.fName, registration.lName)) {
+            alert("Invalid Email: must be an Aurora.edu authorized email.")
+            return;
+        }
+        let apiUrl = "http://localhost:3000/register";
         if (registration.email && registration.password && registration.confirmPassword === registration.password) {
             setLoading(true);
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, registration.email, registration.password);
                 const sessionToken = userCredential._tokenResponse['idToken']
-                await storeToken(sessionToken);
-                //console.log(userCredential._tokenResponse.email);
+                await setCookie("sessionToken", sessionToken);
+                // await setCookie("firstName", registration.fName);
+                // await setCookie("lastName", registration.lName);
                 const response = await axios.post(apiUrl, {...registration, token: sessionToken})
                 console.log(response);
                 s = response.config.data;
@@ -106,6 +64,36 @@ const Register = () => {
             setLoading(false);
         } else {
             Alert.alert('Registration Failed', 'Please enter valid email and password.');
+        }
+    };
+
+    //
+    // Input Handlers
+    //
+    const handleInputChange = (field, text) => {
+        setRegistration(prevState => ({
+            ...prevState,
+            [field]: text
+        }));
+    };
+
+    const handleEmailChange = (text) => {handleInputChange('email', text);};
+
+    const handlePasswordChange = (text) => {handleInputChange('password', text);};
+
+    const handleConfirmPasswordChange = (text) => {handleInputChange('confirmPassword', text);};
+
+    const handleLNameChange = (text) => {handleInputChange('lName', text);};
+
+    const handleFNameChange = (text) => {handleInputChange('fName', text);};
+
+    const handlePhoneChange = (text) => {handleInputChange('phone', text);};
+
+    const storeToken = async (token) => {
+        try {
+            await AsyncStorage.setItem('@userToken', token);
+        } catch (error) {
+            console.error('Error storing token:', error);
         }
     };
 

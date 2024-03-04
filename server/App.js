@@ -7,7 +7,17 @@ const UserModel = require("./models/user.js");
 const MyReportsModel = require("./models/report");
 const app = express();
 const port = process.env.PORT || 3000;
+const portNumber = require("./../Portnumber/portNumber.js");
 const admin = require("firebase-admin");
+const http = require("http");
+const server = http.createServer(app);
+const {Server} = require("socket.io");
+const io = new Server(server, {
+  cors: {
+    origin: '*'
+  }
+});
+
 
 // Initialize Firebase Admin SDK
 const serviceAccount = require("./au-report-bbe7d-firebase-adminsdk-rm0f2-5424c5388d.json");
@@ -20,12 +30,13 @@ app.use(express.urlencoded({ extended: true, limit: "100mb" }));
 app.use(express.json());
 app.use(cors());
 
-app.use(MessageRouter);
+app.use("/messaging", MessageRouter);
 app.use(ReportRouter);
 
-// Middleware to verify Firebase ID token
+//Middleware to verify Firebase ID token
 const verifyToken = (req, res, next) => {
   const idToken = req.headers.authorization;
+  userData = req.user;
 
   admin
       .auth()
@@ -39,6 +50,8 @@ const verifyToken = (req, res, next) => {
         res.status(403).send("Unauthorized");
       });
 };
+
+
 
 app.post("/register", async (req, res) => {
   const email = req.body.email;
@@ -57,7 +70,14 @@ app.post("/register", async (req, res) => {
     res.sendStatus(400);
   }
 });
+io.on('connection', (socket) =>{
+  socket.on("message", (msg) =>{
 
-app.listen(port, "0.0.0.0", () => {
-  console.log(`Running on ${port}`);
+    console.log(msg);
+    io.emit("data", msg);
+  })
+})
+server.listen(port, portNumber, () => {
+  console.log(`Running on  ${portNumber}:${port}`);
 });
+

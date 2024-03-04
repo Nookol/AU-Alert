@@ -1,27 +1,28 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const MyChat = ({ message }) => {
+const MyChat = ({ message, firstname,lastname,timeposted }) => {
+
+
+  const fullName = firstname+" "+lastname;
   return (
     <View style={styles.container}>
       <View style={styles.messageContainer}>
-        <Text style={styles.messageText}>Help e find dunhasssssssssssss
-        asdddddddddddddddddddddddddddddddddddddd
-        dddddddddddddddddm 
-        </Text>
+        <Text style={styles.messageText}>{message}</Text>
       </View>
-      <Text style={styles.senderName}>sent by: Narayan Chuwan</Text>
+      <Text style={styles.senderName}>sent by: {fullName}</Text>
+      <Text style={styles.senderName}>{timeposted}</Text>
+
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#00B2FF',
     borderRadius: 10,
     padding: 8,
-    marginLeft: 50,
-    marginRight: 2,
+    alignSelf: 'flex-end',
     maxWidth: '100%',    
 
   },

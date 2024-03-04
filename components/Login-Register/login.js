@@ -1,17 +1,22 @@
-import React, {useState} from 'react';
-import {StyleSheet, View, Text, TextInput, Button, Alert, ActivityIndicator} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {signInWithEmailAndPassword} from 'firebase/auth';
-import {auth} from "@/auth/firebase";
-import colors from "@/constants/Colors"
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from "@/auth/firebase"; // Assuming this is your correct Firebase initialization
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from "axios";
+import colors from "@/constants/Colors";
+import saveUserData from "./../Messaging/saveUserData/saveUserData";
+import portNumber from '@/Portnumber/portNumber';
 import {setCookie} from "@/api/cookies";
 
 const Login = () => {
-
     const navigation = useNavigation();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+  
 
     const trySignIn = async () => {
         try {
@@ -20,6 +25,8 @@ const Login = () => {
             const sessionToken = userCredential._tokenResponse['idToken']
             await setCookie("sessionToken", sessionToken);
             console.log('User signed in successfully');
+            saveUserData(userCredential._tokenResponse.email);
+           // userData(userCredential._tokenResponse.email);
             return true;
         } catch (error) {
             console.error('Error signing in:', error.message);

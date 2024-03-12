@@ -33,7 +33,7 @@ const Register = () => {
             alert("Invalid Email: must be an Aurora.edu authorized email.")
             return;
         }
-        let apiUrl = "http://localhost:3000/register";
+        let apiUrl = `http://${portnumber}/register`;
         if (registration.email && registration.password && registration.confirmPassword === registration.password) {
             setLoading(true);
             try {

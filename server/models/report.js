@@ -16,7 +16,22 @@ class MyReportsModel {
     //     `).then(results => console.log(results))
     // }
 
-    showMyReport = () => {
+    showMyReports = async (userid, status) => {
+        //userid = userid+'';
+
+
+
+        const query = `select * from reports where userid=$1 AND status=$2`;
+        try{
+            const result = await client.query(query, [userid, status]);
+            return result;
+
+        }catch(err){
+            console.log(err);
+        }
+        
+
+
 
     }
 

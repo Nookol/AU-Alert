@@ -2,18 +2,18 @@ import * as React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import ReportForm from "../components/Reporting/ReportForm";
 import MainMessage from "../components/Messaging/MainMessage";
-import { StyleSheet, View } from "react-native";
-import MyReports from "../components/Reporting/MyReports";
+import { StyleSheet, View, SafeAreaView} from "react-native";
+import MyReportData from "../components/MyReports/MyReportData";
 const Tab = createBottomTabNavigator();
 export default function Home() {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Tab.Navigator>
         <Tab.Screen name="New Report" component={ReportForm} />
         <Tab.Screen name="Messaging" component={MainMessage} />
-        <Tab.Screen name="My Reports" component={MyReports} />
+        <Tab.Screen name="My Reports" component={MyReportData} />
       </Tab.Navigator>
-    </View>
+    </SafeAreaView>
   );
 }
 

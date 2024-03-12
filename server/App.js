@@ -27,7 +27,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/messaging", MessageRouter);
-app.use(ReportRouter);
+app.use("/reporting", ReportRouter);
 
 //Middleware to verify Firebase ID token
 const verifyToken = (req, res, next) => {

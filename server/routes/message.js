@@ -20,7 +20,7 @@ messageRouter.get("/getUserByEmail", async (req,res) => {
     const data = new messageModel();
     email = req.rawHeaders[3];
     const allMessages = await data.getUserByEmail(email);
-    res.json(allMessages);
+    res.send(allMessages);
 });
 
 module.exports = messageRouter

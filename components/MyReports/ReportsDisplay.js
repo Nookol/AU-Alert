@@ -1,17 +1,28 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-
+colorData= "yellow";
 const ReportsDisplay = ({title,location,status}) => {
-  console.log("it;s here!")
+  const[colorStatus, setColorStatus] = useState("yellow");
+
+  if(status === "complete")
+    colorData= "green";
+  else if(status === "pending")
+    colorData= "yellow";
+  else if(status === "referred")
+    colorData= "purple";
+  else if(status === "open")
+    colorData= "orange";
+
+
 
   return (
     <View style={styles.container}>
 
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.location}>Location: {location}</Text>
-        <Text style={styles.status}>Status: {status}</Text>
+        <Text style={{color:colorData }}>Status: {status}</Text>
 
     </View>
   );
@@ -37,6 +48,7 @@ const styles = StyleSheet.create({
     },
     status: {
       fontSize: 16,
+      
       color: 'green', // You can change color based on status
     },
   });

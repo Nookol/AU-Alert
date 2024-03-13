@@ -37,8 +37,10 @@ const MyReportData = () => {
             onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
           >
             <Picker.Item label="Pending" value="pending" />
-            <Picker.Item label="Solved" value="solved" />
-            <Picker.Item label="Closed" value="closed" />
+            <Picker.Item label="Open" value="open" />
+            <Picker.Item label="Complete" value="complete" />
+            <Picker.Item label="Referred" value="referred" />
+
           </Picker>
 
           {

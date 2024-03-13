@@ -1,5 +1,5 @@
 import React, { useEffect, useState} from 'react';
-import { View, Text, StyleSheet,SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet,SafeAreaView,ScrollView } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ReportsDisplay from './ReportsDisplay';
@@ -42,29 +42,32 @@ const MyReportData = () => {
             <Picker.Item label="Referred" value="referred" />
 
           </Picker>
+          <ScrollView>
 
-          {
-            
-            reportData.map( data =>{
-               {
-               
-                if(data.title){ 
-                  return (
-                    <View>
-                      <ReportsDisplay title={data.title} location={data.location} status={data.status} />
-                    </View>
+            {
+              
+              reportData.map( data =>{
+                {
+                
+                  if(data.title){ 
+                    return (
+                      <View>
+                        <ReportsDisplay title={data.title} location={data.location} status={data.status} />
+                      </View>
 
-                  )
-                 
-                    
+                    )
+                  
+                      
 
-                }
-                 
-                
-                
-                
-              }})
-          }
+                  }
+                  
+                  
+                  
+                  
+                }})
+            }
+          </ScrollView>
+
 
 
         </SafeAreaView>

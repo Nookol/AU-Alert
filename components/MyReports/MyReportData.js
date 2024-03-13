@@ -31,7 +31,7 @@ const MyReportData = () => {
     
       return (
 
-        <SafeAreaView>
+        <SafeAreaView style={styles.scrollViewTag}>
           <Picker
             selectedValue={selectedValue}
             onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
@@ -78,5 +78,13 @@ const MyReportData = () => {
 
     
 };
+const styles = StyleSheet.create( {
+
+  scrollViewTag:{
+    paddingBottom: 60
+  }
+
+})
+
 
 export default MyReportData;

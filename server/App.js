@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const MessageRouter = require("./routes/message");
 const ReportRouter = require("./routes/report");
+const ResetRouter = require("./routes/passwordreset");
 const UserModel = require("./models/user.js");
 const app = express();
 const port = process.env.PORT || 3000;
@@ -27,7 +28,12 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/messaging", MessageRouter);
+<<<<<<< Updated upstream
 app.use("/reporting", ReportRouter);
+=======
+app.use(ReportRouter);
+app.use(ResetRouter);
+>>>>>>> Stashed changes
 
 //Middleware to verify Firebase ID token
 const verifyToken = (req, res, next) => {

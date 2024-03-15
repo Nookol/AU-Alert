@@ -49,6 +49,18 @@ const Login = () => {
         }
     };
 
+    const handleReset = async () => {
+        try {
+            setLoading(true);
+            await auth.sendPasswordResetEmail(email);
+            Alert.alert('Password Reset Email Sent', 'Check your email to reset your password.');
+        } catch (error) {
+            console.error('Error sending password reset email:', error.message);
+            Alert.alert('Password Reset Error', 'Failed to send password reset email.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -73,6 +85,7 @@ const Login = () => {
             <Button title="Bypass to app" onPress={() => {
                 navigation.navigate('Home')
             }}/>
+            <Button title="Password Reset" onPress={handleReset}/>
             {loading && <ActivityIndicator size="large" color="#0000ff"/>}
         </View>
     );

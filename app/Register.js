@@ -6,12 +6,9 @@ import {auth} from '../auth/firebase';
 import colors from '../constants/Colors'
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import portNumber from '../Portnumber/portNumber';
-import saveUserData from "../components/Messaging/saveUserData/saveUserData";
+import {getUserData} from "../components/Messaging/saveUserData/saveUserData";
 import {isAuEmail} from "../components/Login-Register/userEmailFilter";
 import {setCookie} from "../api/cookies";
-
-
 
 const Register = () => {
 
@@ -33,28 +30,20 @@ const Register = () => {
             alert("Invalid Email: must be an Aurora.edu authorized email.")
             return;
         }
-        let apiUrl = `http://${portnumber}/register`;
+        let apiUrl = `http://localhost:3000/register`;
         if (registration.email && registration.password && registration.confirmPassword === registration.password) {
             setLoading(true);
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, registration.email, registration.password);
                 const sessionToken = userCredential._tokenResponse['idToken']
                 await setCookie("sessionToken", sessionToken);
-                // await setCookie("firstName", registration.fName);
-                // await setCookie("lastName", registration.lName);
                 const response = await axios.post(apiUrl, {...registration, token: sessionToken})
                 console.log(response);
-                s = response.config.data;
+                let s = response.config.data;
                 const emailIndexStart = s.indexOf('"email":"') + '"email":"'.length;
                 const emailIndexEnd = s.indexOf('"', emailIndexStart);
-                //saveUserData(email);
-                // Extract the email field
                 const email = s.substring(emailIndexStart, emailIndexEnd);
-                console.log(email);
-                saveUserData(email);
-
-                // console.log("------------------------------------------------------------------------------");
-                //console.log(secondResponse);
+                await getUserData(registration.email);
                 console.log('User registered successfully');
                 navigation.navigate('Home');
             } catch (error) {

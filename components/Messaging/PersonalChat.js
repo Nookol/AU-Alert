@@ -3,7 +3,6 @@ import { View, Text, StyleSheet } from 'react-native';
 
 const MyChat = ({ message, firstname,lastname,timeposted }) => {
 
-
   const fullName = firstname+" "+lastname;
   return (
     <View style={styles.container}>
@@ -12,7 +11,6 @@ const MyChat = ({ message, firstname,lastname,timeposted }) => {
       </View>
       <Text style={styles.senderName}>sent by: {fullName}</Text>
       <Text style={styles.senderName}>{timeposted}</Text>
-
     </View>
   );
 };

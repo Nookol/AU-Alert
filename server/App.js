@@ -15,6 +15,9 @@ const io = new Server(server, {
     origin: '*'
   }
 });
+
+app.use("/admin", MessageRouter);
+
 const serviceAccount = require("./au-report-bbe7d-firebase-adminsdk-rm0f2-5424c5388d.json");
 
 admin.initializeApp({

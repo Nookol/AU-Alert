@@ -1,4 +1,4 @@
-const portNumber = "http://localhost:3000";
+const portNumber = "192.168.1.14";
 
 module.exports = portNumber;
 

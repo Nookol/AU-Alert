@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TextInput, SafeAreaView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
 import socket from './Socket/socket';
 import { user } from './saveUserData/saveUserData'; // Import user object
@@ -21,7 +20,8 @@ const SendIcon = () => {
                 postedTime: new Date(new Date()).toLocaleString("en-US", { timeZone: "America/Chicago" })
             });
 
-            axios.post(`http://localhost:3000/messaging/postMessages`, {
+            // axios.post(`http://localhost:3000/messaging/postMessages`, {
+            axios.post(`https://au-rep-server.onrender.com/messaging/postMessages`, {
                 message: message,
                 userid: user.userid, // Access user's ID
                 postedTime: new Date(new Date()).toLocaleString("en-US", { timeZone: "America/Chicago" })

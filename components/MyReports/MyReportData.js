@@ -13,8 +13,8 @@ const MyReportData = () => {
         const fetchData = async () => {
             try {
                 const userId = await getCookie('userid');
-                const response = await axios.get(`http://localhost:3000/getReports/${userId}/${selectedValue}`);
-                console.log(response.data);
+                const response = await axios.get(`https://au-rep-server.onrender.com/getReports/${userId}/${selectedValue}`);
+                // const response = await axios.get(`http://localhost:3000/getReports/${userId}/${selectedValue}`);
                 setReportsData(response.data);
             } catch (error) {
                 console.error('Error fetching report data:', error);
@@ -40,12 +40,14 @@ const MyReportData = () => {
                 {
                     reportData.length > 0 ? (
                         reportData.map(data => {
+                            console.log(JSON.stringify(data))
                             if (data.title) {
-                                const locationObject = JSON.parse(data.location);
-                                const loc = (locationObject["building"] + " " + locationObject["room"]);
+                                const locationObject = data.location
+                                const building = locationObject[0]
+                                const room = locationObject[1]
                                 return (
                                     <View key={data.reportid}>
-                                        <ReportsDisplay title={data.title} location={loc} status={data.status}/>
+                                        <ReportsDisplay date={data.timestamp} title={data.title} building={building} room={room} image={data.image} status={data.status}/>
                                     </View>
                                 );
                             }
@@ -67,7 +69,7 @@ const MyReportData = () => {
 
 const styles = StyleSheet.create({
     scrollViewTag: {
-        marginBottom: '40%',
+        marginBottom: '50%',
         marginLeft: 30,
         marginRight: 30
     },

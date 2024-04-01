@@ -77,7 +77,6 @@ app.get("/public", (req, res) => {
 
 // Private route (requires authentication)
 app.get("/getReports", verifyToken, (req, res) => {
-    console.log(req)
     res.send(`Welcome user ${req.user.email}, this route is protected.`);
 });
 io.on('connection', (socket) =>{

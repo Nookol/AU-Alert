@@ -1,185 +1,291 @@
-import {View, Text, StyleSheet, Button, SafeAreaView, ScrollView, TextInput} from "react-native";
-import DropdownComponent from "./locationDropdown";
-import DropdownLocationType from "./locationDropdown";
-import ProblemTitleBox from "./ProblemTitle";
-import ProblemDescBox from "./DescribeTextBox";
-import React, {useState} from "react";
-import SubmitProblem from "./SubmitReport";
-import colors from "@/constants/Colors"
+import React, {useState, useEffect} from "react";
+import {View, Text, StyleSheet, Button, SafeAreaView, ScrollView, TextInput, Image} from "react-native";
 import axios from "axios";
-import {Dropdown} from "react-native-element-dropdown";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import {Dropdown} from "react-native-element-dropdown";
+import colors from "@/constants/Colors";
+import {getFromApi} from "../../api/get";
+import {useNavigation} from '@react-navigation/native';
+import {getCookie} from "../../api/cookies";
+import {user} from "../Messaging/saveUserData/saveUserData";
+import {reportFormData as globalForm} from "./formData";
+import uploadPhoto from "../Camera/uploadPhoto";
 
 export default function ReportForm() {
-    let reportFormData = new FormData();
-    const ProblemTitleBox = () => {
-        const [title, setTitle] = useState('');
-        reportFormData.append('title', title);
-        return (
-            <SafeAreaView>
-                <TextInput
-                    style={titleStyles.input}
-                    onChangeText={title => setTitle(title)}
-                    value={title}
-                />
-            </SafeAreaView>
-        );
+    const [userId, setUserId] = useState('');
+    const [imageUri, setImageUri] = useState(null);
+    const [loading, setLoading] = useState(false); // Track loading state
+
+
+    const [reportFormData, setReportFormData] = useState({
+        userId: user.userid,
+        image: globalForm.image || '',
+        title: globalForm.title || '',
+        location: globalForm.location || null,
+        locationSpec: globalForm.locationSpec || null,
+        description: globalForm.description || ''
+    });
+
+    useEffect(() => {
+        const getImageFromStorage = async () => {
+            try {
+                const fileName = await getCookie('img')
+                setImageUri(fileName);
+            } catch (error) {
+                console.error('Error getting image from storage:', error);
+            }
+        };
+
+        getImageFromStorage();
+    }, []);
+
+    useEffect(() => {
+        setReportFormData(prevState => ({...prevState, userId}));
+    }, [userId]);
+
+    const updateTitle = (title) => {
+        setReportFormData(prevState => ({...prevState, title}));
     };
 
-    const locationData = [
-        { label: 'Stephens', value: '1' },
-    ];
-    const locationSpecifics = [
-        { label: 'STPHS101', value: '1' },
-        { label: 'STPHS102', value: '1' },
-        { label: 'STPHS103', value: '1' },
-        { label: 'STPHS104', value: '1' },
-        { label: 'Spartan Spot', value: '1' },
-        { label: '1st Floor Hallway', value: '1' },
-        { label: '2nd Floor Hallway', value: '1' },
-    ];
-    const DropdownComponent = () => {
-        const [locationValue, setLocationValue] = useState(null);
-        const [locationSpecValue, setLocationSpecValue] = useState(null);
-        const [isFocus, setIsFocus] = useState(false);
-        // reportFormData.append('location', locationValue);
-        return (
-            <View style={locationStyles.container}>
-                <View style ={{backgroundColor: '#fff'}}>
-                    {/*{renderLabel()}*/}
-                    <Dropdown
-                        style={[locationStyles.dropdown, isFocus && { borderColor: 'blue' }]}
-                        placeholderStyle={locationStyles.placeholderStyle}
-                        selectedTextStyle={locationStyles.selectedTextStyle}
-                        inputSearchStyle={locationStyles.inputSearchStyle}
-                        iconStyle={locationStyles.iconStyle}
-                        data={locationData}
-                        search
-                        maxHeight={300}
-                        labelField="label"
-                        valueField="locationValue"
-                        placeholder={!isFocus ? 'Select Building, Outside or Other' : '...'}
-                        searchPlaceholder="Search"
-                        locationValue={locationValue}
-                        onFocus={() => setIsFocus(true)}
-                        onBlur={() => setIsFocus(false)}
-                        onChange={item => {
-                            setLocationValue(item.locationValue);
-                            setIsFocus(false);
-                        }}
-                        renderLeftIcon={() => (
-                            <AntDesign
-                                style={locationStyles.icon}
-                                color={isFocus ? 'blue' : 'black'}
-                                name="Safety"
-                                size={20}
-                            />
-                        )}
-                    />
-                    <Dropdown
-                        style={[locationStyles.dropdown, isFocus && { borderColor: 'blue' }]}
-                        placeholderStyle={locationStyles.placeholderStyle}
-                        selectedTextStyle={locationStyles.selectedTextStyle}
-                        inputSearchStyle={locationStyles.inputSearchStyle}
-                        iconStyle={locationStyles.iconStyle}
-                        data={locationSpecifics}
-                        search
-                        maxHeight={300}
-                        labelField="label"
-                        valueField="locationSpecValue"
-                        placeholder={!isFocus ? 'Select Room, Nearest room or Parking lot' : '...'}
-                        // placeholder="Select Room, Nearest room or Parking lot"
-                        searchPlaceholder="Search"
-                        locationSpecValue={locationSpecValue}
-                        onFocus={() => setIsFocus(true)}
-                        onBlur={() => setIsFocus(false)}
-                        onChange={item => {
-                            setLocationSpecValue(item.locationSpecValue);
-                            setIsFocus(false);
-                        }}
-                        renderLeftIcon={() => (
-                            <AntDesign
-                                style={styles.icon}
-                                color={isFocus ? 'blue' : 'black'}
-                                name="Safety"
-                                size={20}
-                            />
-                        )}
-                    />
-                </View>
-            </View>
-        );
+    const updateLocation = (location) => {
+        location = location.buildingname;
+        setReportFormData(prevState => ({...prevState, location}));
     };
-    // reportFormData.append('location', DropdownComponent.locationSpecValue);
-    const ProblemDescBox = () => {
-        const [text, onChangeText] = useState('');
 
-        return (
-            <SafeAreaView>
-                <TextInput
-                    style={descStyles.input}
-                    onChangeText={onChangeText}
-                    value={text}
-                />
-            </SafeAreaView>
-        );
+    const updateLocationSpec = (locationSpec) => {
+        locationSpec = locationSpec.roomname;
+        setReportFormData(prevState => ({...prevState, locationSpec}));
+        console.log(reportFormData)
     };
-    // reportFormData.append('description', ProblemDescBox.text);
 
-    async function submitForm () {
-        axios.post(`http://localhost:3000/postreport`, {title: reportFormData})
-            .then(response => {
-                console.log('Response data:', response.data);
-            })
-            .catch(error => {
-                console.error('Error posting data:', error);
-                //please fill out all fields
-            });
-    }
-    const SubmitProblem = () => {
-        const [isSubmitted, setIsSubmitted] = useState(false);
-        return(
-            <View>
-                <Button onPress={submitForm} title={"Submit"}/>
-            </View>
+    const updateDescription = (description) => {
+        setReportFormData(prevState => ({...prevState, description}));
+    };
 
-        );
-    }
+    const submitForm = async () => {
+        setLoading(true);
+        let uploadResponse;
+        try {
+            uploadResponse = await uploadPhoto(imageUri);
+        } catch (error) {
+            console.error('Error in form submission:', error);
+            alert("Error occurred. Please try again.")
+        } finally {
+            setLoading(false);
+        }
+
+        try {
+            const postObject = {
+                userId: user.userid,
+                image: uploadResponse,
+                title: reportFormData.title,
+                location: reportFormData.location,
+                locationSpec: reportFormData.locationSpec,
+                description: reportFormData.description
+            };
+            console.log(JSON.stringify(postObject))
+            // const response = await axios.post(`http://localhost:3000/createReport`, postObject);
+            const response = await axios.post(`https://au-rep-server.onrender.com/createReport`, postObject);
+            console.log('Response data:', response.data);
+        } catch (error) {
+            console.error('Error posting data:', error);
+        }
+    };
+    const navigation = useNavigation();
 
     return (
         <SafeAreaView style={styles.background}>
             <ScrollView>
                 <View style={styles.background}>
-                    <Text style={styles.title}> Report A Problem </Text>
-                    <Text style={styles.text}> Problem Title: </Text>
-                    <ProblemTitleBox/>
+                    <Text style={styles.topText}> Problem Title: </Text>
+                    <ProblemTitleBox updateTitle={updateTitle}/>
+                    <Button onPress={() => {
+                        globalForm.title = reportFormData.title
+                        globalForm.image = reportFormData.image
+                        globalForm.description = reportFormData.description
+                        globalForm.location = reportFormData.location
+                        globalForm.locationSpec = reportFormData.locationSpec
+                        navigation.navigate('Camera/index')
+                    }
+                    } title={"Add Photo"}/>
+                    <View style={{alignItems: 'center'}}>
+                        {imageUri && <Image source={{uri: imageUri}} height={200} style={styles.image}/>}
+                    </View>
                     <Text style={styles.text}> Location: </Text>
-                    <DropdownComponent/>
+                    <DropdownComponent updateLocation={updateLocation} updateLocationSpec={updateLocationSpec}/>
                     <Text style={styles.text}> Describe Your Problem: </Text>
-                    <ProblemDescBox/>
-                    <SubmitProblem/>
+                    <ProblemDescBox updateDescription={updateDescription}/>
+                    <Button onPress={submitForm} title={"Submit"} disabled={loading}/>
                 </View>
             </ScrollView>
         </SafeAreaView>
     );
 }
 
+const ProblemTitleBox = ({updateTitle}) => {
+    const [title, setTitle] = useState(globalForm.title || null);
+    const handleTitleChange = (title) => {
+        setTitle(title);
+        updateTitle(title);
+    };
+
+    return (
+        <SafeAreaView>
+            <TextInput
+                style={titleStyles.input}
+                onChangeText={handleTitleChange}
+                value={title}
+            />
+        </SafeAreaView>
+    );
+};
+
+const DropdownComponent = ({updateLocation, updateLocationSpec}) => {
+
+    const [locationData, setLocationData] = useState([]);
+    const [locationValue, setLocationValue] = useState(globalForm.location || null);
+    const [locationSpecifics, setLocationSpecifics] = useState([]);
+    const [locationSpecValue, setLocationSpecValue] = useState(globalForm.locationSpec || null);
+    const [isFocus, setIsFocus] = useState(false);
+
+    useEffect(() => {
+        const fetchLocationData = async () => {
+            try {
+                const response = await getFromApi("getLocations", {});
+                setLocationData(response);
+            } catch (error) {
+                console.error("Error fetching location data:", error);
+            }
+        };
+        fetchLocationData();
+    }, []);
+
+    const fetchBuildingData = async (location) => {
+        try {
+            const response = await getFromApi(`getRooms/${location.buildingid}`, {});
+            setLocationSpecifics(response);
+        } catch (error) {
+            console.error("Error fetching location specifics:", error);
+        }
+    };
+
+    const handleLocationChange = (location) => {
+        setLocationValue(location);
+        updateLocation(location);
+        setIsFocus(false);
+        fetchBuildingData(location);
+    };
+
+    const handleLocationSpecChange = (locationSpec) => {
+        setLocationSpecValue(locationSpec);
+        updateLocationSpec(locationSpec);
+        setIsFocus(false);
+    };
+
+    return (
+        <View style={locationStyles.container}>
+            <View style={{backgroundColor: "#fff"}}>
+                <Dropdown
+                    style={[locationStyles.dropdown, isFocus && {borderColor: "blue"}]}
+                    placeholderStyle={locationStyles.placeholderStyle}
+                    selectedTextStyle={locationStyles.selectedTextStyle}
+                    inputSearchStyle={locationStyles.inputSearchStyle}
+                    iconStyle={locationStyles.iconStyle}
+                    data={locationData}
+                    search
+                    maxHeight={300}
+                    labelField="buildingname"
+                    valueField="buildingname"
+                    placeholder={!isFocus ? "Select Building, Outside or Other" : "..."}
+                    searchPlaceholder="Search"
+                    value={locationValue}
+                    onFocus={() => setIsFocus(true)}
+                    onBlur={() => setIsFocus(false)}
+                    onChange={handleLocationChange}
+                    renderLeftIcon={() => (
+                        <AntDesign
+                            style={locationStyles.icon}
+                            color={isFocus ? "blue" : "black"}
+                            name="Safety"
+                            size={20}
+                        />
+                    )}
+                />
+                <Dropdown
+                    style={[locationStyles.dropdown, isFocus && {borderColor: "blue"}]}
+                    placeholderStyle={locationStyles.placeholderStyle}
+                    selectedTextStyle={locationStyles.selectedTextStyle}
+                    inputSearchStyle={locationStyles.inputSearchStyle}
+                    iconStyle={locationStyles.iconStyle}
+                    data={locationSpecifics}
+                    search
+                    maxHeight={300}
+                    labelField="roomname"
+                    valueField="roomname"
+                    placeholder={!isFocus ? "Select Room, Nearest room or Parking lot" : "..."}
+                    searchPlaceholder="Search"
+                    value={locationSpecValue}
+                    onFocus={() => setIsFocus(true)}
+                    onBlur={() => setIsFocus(false)}
+                    onChange={handleLocationSpecChange}
+                    renderLeftIcon={() => (
+                        <AntDesign
+                            style={styles.icon}
+                            color={isFocus ? "blue" : "black"}
+                            name="Safety"
+                            size={20}
+                        />
+                    )}
+                />
+            </View>
+        </View>
+    );
+};
+const ProblemDescBox = ({updateDescription}) => {
+    const [text, onChangeText] = useState(globalForm.description || null);
+
+    const handleDescChange = (text) => {
+        onChangeText(text);
+        updateDescription(text);
+    };
+
+    return (
+        <SafeAreaView>
+            <TextInput
+                style={descStyles.input}
+                onChangeText={handleDescChange}
+                value={text}
+            />
+        </SafeAreaView>
+    );
+};
+
 const styles = StyleSheet.create({
     background: {
         backgroundColor: colors.main.background,
+        flex: 1,
+    },
+    image: {
+        alignContent: "center",
+        width: 100
     },
     title: {
         fontSize: 40,
         color: '#ffffff',
-        marginBottom: 15,
-        padding: 35,
+        marginBottom: 20,
+        paddingBottom: 20,
+        paddingTop: 20,
 
     },
     text: {
         fontSize: 25,
         padding: 5,
         color: '#ffffff',
-        // fontSize: 100,
+    },
+    topText: {
+        fontSize: 25,
+        paddingTop: 50,
+        color: '#ffffff',
     }
 });
 
@@ -244,4 +350,3 @@ const descStyles = StyleSheet.create({
     },
 });
 
-// export default ReportForm;

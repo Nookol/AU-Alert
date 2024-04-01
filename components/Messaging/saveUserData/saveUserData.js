@@ -1,27 +1,46 @@
-import axios from "axios"
-import portNumber from "./../../../Portnumber/portNumber";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { setCookie } from "@/api/cookies";
+import axios from "axios";
 
-const userData = (userEmail) =>{
-  console.log("is it getting here? ")
-     axios.get(`http://${portNumber}:3000/messaging/getUserByEmail`, { headers: {
-      userEmail: userEmail
+let user = {
+    userid: null,
+    first: null,
+    last: null,
+    email: null
+};
+
+const getUserData = async (userEmail) => {
+    try {
+        const response = await axios.post(`https://au-rep-server.onrender.com/getUserInfo`, { email: userEmail });
+        // const response = await axios.post(`http://localhost:3000/getUserInfo`, { email: userEmail });
+        const userData = response.data;
+
+        if (Object.keys(userData).length > 0) {
+            // Update user object with retrieved data
+            user.userid = userData.userid.toString();
+            user.first = userData.firstname;
+            user.last = userData.lastname;
+            user.email = userEmail;
+
+            // Set cookies
+
+            await setCookie("userid", user.userid);
+            await setCookie("first", user.first);
+            await setCookie("last", user.last);
+            await setCookie("email", user.email);
+            await setCookie("img", "");
+
+            console.log("User data retrieved successfully:", user);
+        } else {
+            console.log("User not found.");
+        }
+
+        // Return user data
+        return userData;
+    } catch (error) {
+        console.error('Error getting user data:', error.message);
+        return null;
     }
-  })
-            .then(response => {
-              console.log("Here's the reponse data from getuser " + response.data[0].firstname);
-              console.log("----------------------------------------------------------------------------------")
-              AsyncStorage.setItem("email", userEmail);
-              AsyncStorage.setItem("first", response.data[0].firstname);
-              AsyncStorage.setItem("last",response.data[0].lastname );
-              AsyncStorage.setItem("userid", response.data[0].userid);
+};
 
-            })
-            .catch(error => {
-              // Handle error
-              console.error('Error getting user data:', error);
-              // You can handle errors here, like displaying an error message to the user
-            });
-}
+export { getUserData, user };
 
-export default userData;

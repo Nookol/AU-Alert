@@ -1,32 +1,26 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
+import {StyleSheet, View, Text, TextInput, Button, Alert, ActivityIndicator, Image} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from "@/auth/firebase"; // Assuming this is your correct Firebase initialization
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from "axios";
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from "@/auth/firebase";
 import colors from "@/constants/Colors";
-import saveUserData from "./../Messaging/saveUserData/saveUserData";
-import portNumber from '@/Portnumber/portNumber';
-import {setCookie} from "@/api/cookies";
+import { setCookie } from "@/api/cookies";
+import firebase from "firebase/compat";
+import {getUserData} from "./../Messaging/saveUserData/saveUserData";
 
 const Login = () => {
     const navigation = useNavigation();
-
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-  
 
     const trySignIn = async () => {
         try {
             let userCredential = await signInWithEmailAndPassword(auth, email, password);
-            console.log(userCredential);
             const sessionToken = userCredential._tokenResponse['idToken']
+            console.log(userCredential._tokenResponse)
             await setCookie("sessionToken", sessionToken);
-            console.log('User signed in successfully');
-            saveUserData(userCredential._tokenResponse.email);
-           // userData(userCredential._tokenResponse.email);
+            await getUserData(email)
             return true;
         } catch (error) {
             console.error('Error signing in:', error.message);
@@ -40,6 +34,7 @@ const Login = () => {
             const success = await trySignIn();
             setLoading(false);
             if (success) {
+                await getUserData(email);
                 navigation.navigate('Home')
             } else {
                 Alert.alert('Login Failed', 'Invalid email or password.');
@@ -49,10 +44,23 @@ const Login = () => {
         }
     };
 
+    const handleReset = async () => {
+        try {
+            await firebase.auth.sendPasswordResetEmail(auth, email);
+            Alert.alert("YAY!")
+        } catch (error) {
+            Alert.alert(error.message)
+        }
+    };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Login</Text>
+            <Image
+                source={{ uri: 'https://alumni.aurora.edu/s/1512/images/editor/logos/22/au_primary-rgb-white_green.png' }}
+                style={{ width: "90%", height: 100 }}
+                accessibilityLabel="Aurora University Logo"
+            />
+            <Text style={{color: 'white' ,fontSize:30, marginBottom: 50}}>Report A Problem</Text>
             <TextInput
                 style={styles.textBox}
                 placeholder="Email"
@@ -66,14 +74,15 @@ const Login = () => {
                 secureTextEntry
                 onChangeText={setPassword}
             />
-            <Button title="Login" onPress={handleLogin}/>
+            <Button title="Login" onPress={handleLogin} />
             <Button title="Register" onPress={() => {
                 navigation.navigate('Register')
-            }}/>
+            }} />
             <Button title="Bypass to app" onPress={() => {
                 navigation.navigate('Home')
-            }}/>
-            {loading && <ActivityIndicator size="large" color="#0000ff"/>}
+            }} />
+            <Button title="Password Reset" onPress={handleReset} />
+            {loading && <ActivityIndicator size="large" color="#0000ff" />}
         </View>
     );
 };

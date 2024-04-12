@@ -1,23 +1,13 @@
 const express = require('express');
 const ReportRouter = express.Router();
-// const Report = require ("../models/report")
-const client = require ('../util/db')
+const {postCreateReport, getUserReportsByStatus, getLocations, getRooms} = require("../controllers/reportController");
 
-ReportRouter.post( "/postreport", (req, res) => {
-    // Report.runGetReport();
-    console.log(req.body.title);
-    console.log(req.body.location);
-    // const query = client.query (`
-    //     INSERT INTO reports (image, location, title, description)
-    //     VALUES (req.image, req.location, req.title, req.description);
-    //     `).then(results => console.log(results))
+ReportRouter.post("/createReport", postCreateReport);
 
-    res.send(JSON.stringify({s : "BLAH"}))
-});
+ReportRouter.get("/getReports/:id/:status",getUserReportsByStatus);
 
-// ReportRouter.get("/myreports", (req, res) => {
-//     console.log("in post report")
-//
-// });
+ReportRouter.get("/getLocations",getLocations);
+
+ReportRouter.get("/getRooms/:buildingId",getRooms);
 
 module.exports = ReportRouter;

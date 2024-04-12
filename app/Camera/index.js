@@ -1,11 +1,10 @@
 import * as React from "react";
 import {StyleSheet, Text, View} from "react-native";
+import {DeviceCam} from "../../components/Camera/DeviceCam";
 
 export default function Home() {
     return (
-        <View style={styles.container}>
-            <Text>WORKING</Text>
-        </View>
+        <DeviceCam/>
     );
 }
 

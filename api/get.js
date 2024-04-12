@@ -4,10 +4,10 @@ export const getFromApi = async (ext, token) => {
     const headers = {
         Authorization: token,
     };
-
     try {
+        // const response = await axios.get(`https://au-rep-server.onrender.com/${ext}`, { headers });
         const response = await axios.get(`http://localhost:3000/${ext}`, { headers });
-        console.log(response.data);
+        // console.log(response.data);
         return response.data;
     } catch (error) {
         console.error(

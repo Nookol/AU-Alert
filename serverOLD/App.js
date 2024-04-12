@@ -6,22 +6,17 @@ const ResetRouter = require("./routes/passwordreset");
 const UserModel = require("./models/user.js");
 const app = express();
 const port = process.env.PORT || 3000;
+const portNumber = require("./../Portnumber/portNumber.js");
 const admin = require("firebase-admin");
 const http = require("http");
 const server = http.createServer(app);
 const {Server} = require("socket.io");
-const AdminTickets = require("./Admin-Server/routes/AdminTickets.js"); 
 const io = new Server(server, {
   cors: {
     origin: '*'
   }
 });
-
-
 const serviceAccount = require("./au-report-bbe7d-firebase-adminsdk-rm0f2-5424c5388d.json");
-const db = require('./util/db.js');
-const client = require("./util/db.js");
-const portNumber = require("../Portnumber/portNumber.js");
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -33,13 +28,11 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/messaging", MessageRouter);
+app.use("/reporting", ReportRouter);
 app.use(ReportRouter);
 app.use(ResetRouter);
-app.use("/tickets", AdminTickets)
 
-
-
-
+//Middleware to verify Firebase ID token
 const verifyToken = (req, res, next) => {
   const idToken = req.headers.authorization;
   userData = req.user;
@@ -56,6 +49,8 @@ const verifyToken = (req, res, next) => {
       });
 
 };
+
+
 
 app.post("/register", async (req, res) => {
     const email = req.body.email;
@@ -75,6 +70,16 @@ app.post("/register", async (req, res) => {
     }
 });
 
+// Public route (does not require authentication)
+app.get("/public", (req, res) => {
+    res.send("This route is public and does not require authentication.");
+});
+
+// Private route (requires authentication)
+app.get("/getReports", verifyToken, (req, res) => {
+    console.log(req)
+    res.send(`Welcome user ${req.user.email}, this route is protected.`);
+});
 io.on('connection', (socket) =>{
   socket.on("message", (msg) =>{
     console.log(msg);
@@ -82,26 +87,7 @@ io.on('connection', (socket) =>{
   })
 })
 
-app.post('/getUserInfo', async (req, res) => {
-    const email = req.body.email;
-    const query = `SELECT firstname, lastname, userId FROM users WHERE email = $1`;
-    try {
-        const result = await db.query(query, [email]);
-        if (result.rows.length > 0) {
-            console.log("Success:", result.rows[0]);
-            res.status(200).json(result.rows[0]); // Return user information
-        } else {
-            console.log("User not found for email:", email);
-            res.status(404).send("User not found"); // Respond with 404 if user not found
-        }
-    } catch (error) {
-        console.error("Error executing query:", error.message);
-        res.status(500).send("Error retrieving user information"); // Respond with 500 if any error occurs
-    }
-});
-
-
-server.listen(3000, () => {
+server.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
 

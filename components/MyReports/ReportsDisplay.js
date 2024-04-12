@@ -1,27 +1,67 @@
-import React, {useState} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import React, { useState } from 'react';
+import { Image, StyleSheet, Text, View, Modal, Button } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 
-let colorData = "yellow";
-const ReportsDisplay = ({title, location, status}) => {
-    const [colorStatus, setColorStatus] = useState("yellow");
+const ReportsDisplay = ({ date, title, status, image, building, room }) => {
+    const [modalVisible, setModalVisible] = useState(false);
 
-    if (status === "complete")
-        colorData = "green";
-    else if (status === "pending")
-        colorData = "#6eadb9";
-    else if (status === "referred")
-        colorData = "purple";
-    else if (status === "open")
-        colorData = "orange";
+    const colorData = getStatusColor(status);
+
+    function getStatusColor(status) {
+        switch (status) {
+            case 'complete':
+                return 'green';
+            case 'pending':
+                return '#6eadb9';
+            case 'referred':
+                return 'purple';
+            case 'open':
+                return 'orange';
+            default:
+                return 'yellow';
+        }
+    }
+
+    function formatDate(timestampString) {
+        const date = new Date(timestampString);
+        return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    }
+
+    const defaultAvatar = `https://ui-avatars.com/api/?name=${building + room}?&color=076d`;
 
     return (
         <View style={styles.container}>
-
+            {image &&
+                <TouchableOpacity onPress={() => setModalVisible(true)}>
+                    <Image
+                        source={{ uri: image || null }}
+                        style={styles.image}
+                    />
+                </TouchableOpacity>
+            }
             <Text style={styles.title}>{title}</Text>
-            <Text style={styles.location}>Location: {location}</Text>
-            <Text style={{color: colorData}}>Status: {status}</Text>
+            <Text style={styles.location}>Building: {building}</Text>
+            <Text style={styles.location}>Room: {room}</Text>
+            <Text style={{ color: colorData }}>Status: {status}</Text>
+            <View>
+                <Text style={{ color: 'grey', fontSize:9 }}>Created: {formatDate(date)}</Text>
+                <Text style={{ color: 'grey', fontSize:9 }}>Last Updated: {formatDate(date)}</Text>
+            </View>
 
+            <Modal
+                animationType="slide"
+                transparent={false}
+                visible={modalVisible}
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View style={styles.modalContainer}>
+                    <Image
+                        source={{ uri: image || defaultAvatar }}
+                        style={styles.modalImage}
+                    />
+                    <Button title="Close" onPress={() => setModalVisible(false)} />
+                </View>
+            </Modal>
         </View>
     );
 };
@@ -34,11 +74,12 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         borderWidth: 1,
         borderColor: '#ccc',
+        alignItems:"center"
     },
     title: {
         fontSize: 18,
         fontWeight: 'bold',
-        marginBottom: 5,
+        padding: 10
     },
     location: {
         fontSize: 16,
@@ -46,8 +87,22 @@ const styles = StyleSheet.create({
     },
     status: {
         fontSize: 16,
-
-        color: 'green', // You can change color based on status
+    },
+    image: {
+        width: 225,
+        height: 300,
+        resizeMode: 'cover',
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'black',
+    },
+    modalImage: {
+        width: '100%',
+        height: '80%',
+        resizeMode: 'contain',
     },
 });
 

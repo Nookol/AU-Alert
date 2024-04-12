@@ -33,14 +33,11 @@ const MainMessage = () => {
                 lastname: msg.lastName,
                 timeposted: msg.postedTime
             }]);
-            // Scroll to the end after a short delay to ensure state update is complete
             setTimeout(() => {
                 scrollViewRef.current.scrollToEnd({animated: true});
             }, 100);
         };
         socket.on("data", handleSocketData);
-
-        // Clean up socket listener on unmount
         return () => {
             socket.off("data", handleSocketData);
         };
@@ -79,7 +76,7 @@ const MainMessage = () => {
                                 );
                             }
                         }
-                        return null; // Ensure to return null if data.message is falsy
+                        return null;
                     })}
                 </View>
             </ScrollView>
@@ -105,7 +102,7 @@ const styles = StyleSheet.create({
         width: "100%",
         padding: 5,
         borderRadius: 8,
-        marginBottom: 10 // Add margin to create space between chat boxes
+        marginBottom: 10
     },
     checkIcon: {
         position: "absolute",

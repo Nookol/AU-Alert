@@ -1,7 +1,9 @@
-import { Camera } from "expo-camera";
-import React, { useEffect, useRef, useState } from "react";
-import { Text, View, StyleSheet, Button, Platform, Image, Alert } from "react-native";
+import {Camera} from "expo-camera";
+import React, {useEffect, useRef, useState} from "react";
+import {Text, View, StyleSheet, Button, Platform, Image, Alert} from "react-native";
 import * as FileSystem from 'expo-file-system';
+import {setCookie} from "../../api/cookies";
+import {useNavigation} from "@react-navigation/native";
 
 export const DeviceCam = () => {
     const [hasCameraPerm, setHasCameraPerm] = useState(null);
@@ -12,30 +14,30 @@ export const DeviceCam = () => {
 
     useEffect(() => {
         (async () => {
-            const { status } = await Camera.requestCameraPermissionsAsync();
+            const {status} = await Camera.requestCameraPermissionsAsync();
             setHasCameraPerm(status === 'granted');
         })();
     }, []);
 
     const takePicture = async () => {
         if (cameraRef.current) {
-            const options = { quality: 0.5, base64: true };
+            const options = {quality: 0.5, base64: true};
             const data = await cameraRef.current.takePictureAsync(options);
             setImage(data.uri);
-            savePhoto(data.uri);
+            await savePhoto(data.uri)
         }
     };
 
     const savePhoto = async (uri) => {
         const fileName = uri.split('/').pop();
         const newPath = FileSystem.cacheDirectory + fileName;
-
+        await setCookie("img", newPath)
         try {
-            await FileSystem.copyAsync({ from: uri, to: newPath });
-            Alert.alert('Success', 'Photo saved to cache');
+            await FileSystem.copyAsync({from: uri, to: newPath});
+            // Alert.alert('Success', 'Photo saved to cache');
         } catch (error) {
             console.error('Error saving photo:', error);
-            Alert.alert('Error', 'Failed to save photo');
+            Alert.alert('Error', 'Failed to take photo');
         }
     };
 
@@ -45,6 +47,8 @@ export const DeviceCam = () => {
     if (hasCameraPerm === false) {
         return <View><Text>No access to camera</Text></View>;
     }
+
+    const nav = useNavigation();
 
     return (
         <View style={styles.container}>
@@ -77,12 +81,13 @@ export const DeviceCam = () => {
                     />
                 </View>
             </Camera>
-            {image && <Image source={{ uri: image }} style={styles.image} />}
+            {image && <Image source={{uri: image}} style={styles.image}/>}
             <View style={styles.bottomButtonContainer}>
                 <Button
                     title="Take Photo"
                     onPress={takePicture}
                 />
+                {image ? <Button title="Use Photo" onPress={() => {nav.goBack()}}/> : ""}
             </View>
         </View>
     );

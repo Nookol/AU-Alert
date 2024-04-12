@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
+import {StyleSheet, View, Text, TextInput, Button, Alert, ActivityIndicator, Image} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from "@/auth/firebase"; // Assuming this is your correct Firebase initialization
+import { auth } from "@/auth/firebase";
 import colors from "@/constants/Colors";
 import { setCookie } from "@/api/cookies";
 import firebase from "firebase/compat";
@@ -55,7 +55,12 @@ const Login = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>BLAH</Text>
+            <Image
+                source={{ uri: 'https://alumni.aurora.edu/s/1512/images/editor/logos/22/au_primary-rgb-white_green.png' }}
+                style={{ width: "90%", height: 100 }}
+                accessibilityLabel="Aurora University Logo"
+            />
+            <Text style={{color: 'white' ,fontSize:30, marginBottom: 50}}>Report A Problem</Text>
             <TextInput
                 style={styles.textBox}
                 placeholder="Email"

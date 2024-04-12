@@ -18,7 +18,6 @@ ReportRouter.post("/postreport", (req, res) => {
 
 
 ReportRouter.get("/getReports",  async (req, res) =>{
-    console.log("It's getting into the router.")
    // console.log(req.rawHeaders[3]);
     const userid = req.rawHeaders[3];
     const status = req.rawHeaders[5];

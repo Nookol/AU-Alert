@@ -12,9 +12,9 @@ const server = http.createServer(app);
 const {Server} = require("socket.io");
 const AdminTickets = require("./Admin-Server/routes/AdminTickets.js"); 
 const io = new Server(server, {
-  cors: {
-    origin: '*'
-  }
+    cors: {
+        origin: '*'
+    }
 });
 
 
@@ -41,19 +41,19 @@ app.use("/tickets", AdminTickets)
 
 
 const verifyToken = (req, res, next) => {
-  const idToken = req.headers.authorization;
-  userData = req.user;
-  admin
-      .auth()
-      .verifyIdToken(idToken)
-      .then((decodedToken) => {
-        req.user = decodedToken; // Adding decoded user information to the request object
-        next();
-      })
-      .catch((error) => {
-        console.error("Error while verifying Firebase ID token:", error);
-        res.status(403).send("Unauthorized");
-      });
+    const idToken = req.headers.authorization;
+    userData = req.user;
+    admin
+        .auth()
+        .verifyIdToken(idToken)
+        .then((decodedToken) => {
+            req.user = decodedToken; // Adding decoded user information to the request object
+            next();
+        })
+        .catch((error) => {
+            console.error("Error while verifying Firebase ID token:", error);
+            res.status(403).send("Unauthorized");
+        });
 
 };
 
@@ -75,11 +75,11 @@ app.post("/register", async (req, res) => {
     }
 });
 
-io.on('connection', (socket) =>{
-  socket.on("message", (msg) =>{
-    console.log(msg);
-    io.emit("data", msg);
-  })
+io.on('connection', (socket) => {
+    socket.on("message", (msg) => {
+        console.log(msg);
+        io.emit("data", msg);
+    })
 })
 
 app.post('/getUserInfo', async (req, res) => {

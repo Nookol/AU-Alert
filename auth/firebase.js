@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
 
 const firebaseConfig = {
     apiKey: "AIzaSyCYH0AX14R9G1TkADeJWxqZ6_aMEEWmamg",
@@ -11,6 +11,16 @@ const firebaseConfig = {
     measurementId: "G-XL5YWLR8PZ"
 };
 
+const email = document.getElementById("email").value;
+sendPasswordResetEmail(auth, email)
+    .then(data => {
+    console.log(data);
+    alert("Email Sent")
+    }).catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        alert(errorMessage);
+})
+
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-

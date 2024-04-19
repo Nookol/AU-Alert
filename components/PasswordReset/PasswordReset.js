@@ -1,37 +1,28 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
-import { auth } from './firebase'; // Import your Firebase initialization module
+import { auth } from './firebase';
+import {sendPasswordResetEmail} from "firebase/auth"; // Import your Firebase initialization module
 
-const PasswordReset = () => {
-    const [email, setEmail] = useState('');
-    const [loading, setLoading] = useState(false);
-
-    const handleResetPassword = async () => {
-        try {
-            setLoading(true);
-            await auth.sendPasswordResetEmail(email);
-            Alert.alert('Password Reset Email Sent', 'Check your email to reset your password.');
-        } catch (error) {
-            console.error('Error sending password reset email:', error.message);
-            Alert.alert('Password Reset Error', 'Failed to send password reset email.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
+function PasswordReset() {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const emailVal = e.target.email.value;
+        sendPasswordResetEmail(auth, emailVal).then(data => {
+            alert("Check email for resetting password")
+        }).catch(error => {
+            alert(error.code)
+        });
+    }
+    
     return (
-        <View>
-            <TextInput
-                placeholder="Enter your email"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-            />
-            <Button title="Reset Password" onPress={handleResetPassword} disabled={loading} />
-            {loading && <ActivityIndicator size="small" color="#0000ff" />}
-        </View>
-    );
-};
+        <div>
+            <h1>Forgot Password</h1>
+            <form onSubmit={(e) => handleSubmit(e)}>
+                <input name="email"/>
+                <button>Reset</button>
+            </form>
+        </div>
+    )
+}
 
 export default PasswordReset;

@@ -44,7 +44,7 @@ const Login = () => {
         }
     };
 
-    const handleReset =  async () => {
+    const handleReset = async () => {
         try {
             await firebase.auth.sendPasswordResetEmail(auth, email);
             Alert.alert("YAY!")
@@ -81,7 +81,7 @@ const Login = () => {
             <Button title="Bypass to app" onPress={() => {
                 navigation.navigate('Home')
             }} />
-            <Button title="Password Reset" onPress={handleReset}/>
+            <Button title="Password Reset" onPress={handleReset} />
             {loading && <ActivityIndicator size="large" color="#0000ff" />}
         </View>
     );

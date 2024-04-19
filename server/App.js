@@ -10,13 +10,18 @@ const admin = require("firebase-admin");
 const http = require("http");
 const server = http.createServer(app);
 const {Server} = require("socket.io");
+const AdminTickets = require("./Admin-Server/routes/AdminTickets.js");
 const io = new Server(server, {
     cors: {
         origin: '*'
     }
 });
+
+
 const serviceAccount = require("./au-report-bbe7d-firebase-adminsdk-rm0f2-5424c5388d.json");
-const db = require('./util/db.js')
+const db = require('./util/db.js');
+const client = require("./util/db.js");
+const portNumber = require("../Portnumber/portNumber.js");
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -30,6 +35,10 @@ app.use(cors());
 app.use("/messaging", MessageRouter);
 app.use(ReportRouter);
 app.use(ResetRouter);
+app.use("/tickets", AdminTickets)
+
+
+
 
 const verifyToken = (req, res, next) => {
     const idToken = req.headers.authorization;
@@ -92,7 +101,7 @@ app.post('/getUserInfo', async (req, res) => {
 });
 
 
-server.listen(port, () => {
+server.listen(3000, () => {
     console.log(`Server is running on port ${port}`);
 });
 

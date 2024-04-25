@@ -63,8 +63,15 @@ export default function ReportForm() {
     };
 
     const submitForm = async () => {
+        if (!reportFormData.title || !reportFormData.description || !reportFormData.location) {
+            alert("Title, description, and location are required fields.");
+            return;
+        }
+
         setLoading(true);
         let uploadResponse;
+        if (imageUri == null)
+            return;
         try {
             uploadResponse = await uploadPhoto(imageUri);
         } catch (error) {
@@ -76,12 +83,12 @@ export default function ReportForm() {
 
         try {
             const postObject = {
-                userId: user.userid,
-                image: uploadResponse,
-                title: reportFormData.title,
-                location: reportFormData.location,
-                locationSpec: reportFormData.locationSpec,
-                description: reportFormData.description
+                userId: user.userid || 1,
+                image: uploadResponse || "none",
+                title: reportFormData.title || null,
+                location: reportFormData.location || null,
+                locationSpec: reportFormData.locationSpec || null,
+                description: reportFormData.description ||null
             };
             console.log(JSON.stringify(postObject))
             // const response = await axios.post(`http://localhost:3000/createReport`, postObject);
@@ -128,7 +135,6 @@ const ProblemTitleBox = ({updateTitle}) => {
         setTitle(title);
         updateTitle(title);
     };
-
     return (
         <SafeAreaView>
             <TextInput

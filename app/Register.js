@@ -1,139 +1,103 @@
-import React, {useState} from 'react';
-import {StyleSheet, View, Text, TextInput, Button, Alert, ActivityIndicator} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {createUserWithEmailAndPassword} from 'firebase/auth';
-import {auth} from '../auth/firebase';
-import colors from '../constants/Colors'
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../auth/firebase';
+import colors from '../constants/Colors';
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {getUserData} from "../components/Messaging/saveUserData/saveUserData";
-import {isAuEmail} from "../components/Login-Register/userEmailFilter";
-import {setCookie} from "../api/cookies";
+import { getUserData } from "../components/Messaging/saveUserData/saveUserData";
+import { isAuEmail } from "../components/Login-Register/userEmailFilter";
+import { setCookie } from "../api/cookies";
+import { sendEmailVerification } from "@firebase/auth";
 
 const Register = () => {
-
     const navigation = useNavigation();
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
     const [registration, setRegistration] = useState({
         email: null,
         password: null,
         confirmPassword: null,
         fName: null,
-        lName: null,
-        phone: null,
-        token : null
+        lName: null
     });
 
-    const handleRegister = async () => {
+    const handleInputChange = (field, value) => {
+        setRegistration(prevState => ({ ...prevState, [field]: value }));
+        setError(null);
+    };
 
-        if (!isAuEmail(registration.email, registration.fName, registration.lName)) {
-            alert("Invalid Email: must be an Aurora.edu authorized email.")
+    const handleRegister = async () => {
+        const { email, password, confirmPassword, fName, lName } = registration;
+        if (! await isAuEmail(email, fName, lName)) {
+            alert("Registration Failed", "Invalid Email: must be an Aurora.edu authorized email.");
             return;
         }
-        // let apiUrl = `http://localhost:3000/register`;
-        let apiUrl = `https://au-rep-server.onrender.com/register`;
-        if (registration.email && registration.password && registration.confirmPassword === registration.password) {
-            setLoading(true);
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, registration.email, registration.password);
-                const sessionToken = userCredential._tokenResponse['idToken']
-                await setCookie("sessionToken", sessionToken);
-                const response = await axios.post(apiUrl, {...registration, token: sessionToken})
-                console.log(response);
-                let s = response.config.data;
-                const emailIndexStart = s.indexOf('"email":"') + '"email":"'.length;
-                const emailIndexEnd = s.indexOf('"', emailIndexStart);
-                const email = s.substring(emailIndexStart, emailIndexEnd);
-                await getUserData(registration.email);
-                console.log('User registered successfully');
-                navigation.navigate('Home');
-            } catch (error) {
-                console.error('Error registering user:', error.message);
-                Alert.alert('Registration Failed', error.message);
-            }
-            setLoading(false);
-        } else {
-            Alert.alert('Registration Failed', 'Please enter valid email and password.');
+        if (!email || !password || !confirmPassword || !fName || !lName) {
+            alert("Registration Failed", "All fields are required.");
+            return;
         }
-    };
-
-    //
-    // Input Handlers
-    //
-    const handleInputChange = (field, text) => {
-        setRegistration(prevState => ({
-            ...prevState,
-            [field]: text
-        }));
-    };
-
-    const handleEmailChange = (text) => {handleInputChange('email', text);};
-
-    const handlePasswordChange = (text) => {handleInputChange('password', text);};
-
-    const handleConfirmPasswordChange = (text) => {handleInputChange('confirmPassword', text);};
-
-    const handleLNameChange = (text) => {handleInputChange('lName', text);};
-
-    const handleFNameChange = (text) => {handleInputChange('fName', text);};
-
-    const handlePhoneChange = (text) => {handleInputChange('phone', text);};
-
-    const storeToken = async (token) => {
+        if (password !== confirmPassword) {
+            alert("Registration Failed", "Passwords do not match.");
+            return;
+        }
+        setLoading(true);
         try {
-            await AsyncStorage.setItem('@userToken', token);
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const sessionToken = userCredential._tokenResponse['idToken']
+            await setCookie("sessionToken", sessionToken);
+            const apiUrl = `https://au-rep-server.onrender.com/register`;
+            const response = await axios.post(apiUrl, { ...registration, token: sessionToken });
+            console.log(response);
+            await getUserData(email);
+            console.log('User registered successfully');
+            navigation.navigate('Home');
         } catch (error) {
-            console.error('Error storing token:', error);
+            console.error('Error registering user:', error.message);
+            Alert.alert('Registration Failed', error.message);
         }
+        setLoading(false);
     };
-
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Register</Text>
             <TextInput
                 style={styles.textBox}
-                placeholder="Email"
+                placeholder="AU Email"
                 placeholderTextColor="gray"
-                onChangeText={handleEmailChange}
+                onChangeText={(text) => handleInputChange('email', text)}
             />
             <TextInput
                 style={styles.textBox}
                 placeholder="Password"
                 placeholderTextColor="gray"
                 secureTextEntry
-                onChangeText={handlePasswordChange}
+                onChangeText={(text) => handleInputChange('password', text)}
             />
             <TextInput
                 style={styles.textBox}
                 placeholder="Confirm Password"
                 placeholderTextColor="gray"
                 secureTextEntry
-                onChangeText={handleConfirmPasswordChange}
+                onChangeText={(text) => handleInputChange('confirmPassword', text)}
             />
             <TextInput
                 style={styles.textBox}
                 placeholder="First Name"
                 placeholderTextColor="gray"
-                onChangeText={handleFNameChange}
+                onChangeText={(text) => handleInputChange('fName', text)}
             />
             <TextInput
                 style={styles.textBox}
                 placeholder="Last Name"
                 placeholderTextColor="gray"
-                onChangeText={handleLNameChange}
+                onChangeText={(text) => handleInputChange('lName', text)}
             />
-            <TextInput
-                style={styles.textBox}
-                placeholder="Phone"
-                placeholderTextColor="gray"
-                onChangeText={handlePhoneChange}
-            />
-            <Button title="Register" onPress={handleRegister}/>
-            <Button title="Back to Login" onPress={() => {
-                navigation.navigate('index')
-            }}/>
-            {loading && <ActivityIndicator size="large" color="#0000ff"/>}
+            <Button title="Register" onPress={handleRegister} disabled={loading} />
+            <Button title="Back to Login" onPress={() => navigation.navigate('index')} disabled={loading} />
+            {loading && <ActivityIndicator size="large" color="#0000ff" />}
         </View>
     );
 };

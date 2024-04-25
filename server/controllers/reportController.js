@@ -25,9 +25,8 @@ const getUserReportsByStatus = async (req, res) =>{
 }
 
 const getLocations = async (req, res) =>{
-    console.log("BLAH!")
     const results = await reportModel.getLocations();
-    console.log(results)
+    // console.log(results)
     res.send(results)
 }
 

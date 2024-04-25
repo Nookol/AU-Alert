@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
-import { View, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
-import { auth } from './firebase';
-import {sendPasswordResetEmail} from "firebase/auth"; // Import your Firebase initialization module
+import {sendPasswordResetEmail} from "firebase/auth";
+import { auth } from "../../auth/firebase"; // Import your Firebase initialization module
 
 function PasswordReset() {
+    alert("blah")
     const handleSubmit = async (e) => {
         e.preventDefault();
         const emailVal = e.target.email.value;

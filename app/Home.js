@@ -7,6 +7,7 @@ import MyReportData from "../components/MyReports/MyReportData";
 
 const Tab = createBottomTabNavigator();
 export default function Home() {
+    //maybe modal
     return (
         <KeyboardAvoidingView
             style={styles.container}

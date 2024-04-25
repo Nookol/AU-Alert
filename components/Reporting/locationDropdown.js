@@ -3,21 +3,6 @@ import {StyleSheet, View} from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
-// const locationData = [
-//     {label: 'Stephens', value: '1'},
-//     {label: 'Stephens2', value: '1'},
-// ];
-//
-// const locationSpecifics = [
-//     {label: 'STPHS101', value: '1'},
-//     {label: 'STPHS102', value: '1'},
-//     {label: 'STPHS103', value: '1'},
-//     {label: 'STPHS104', value: '1'},
-//     {label: 'Spartan Spot', value: '1'},
-//     {label: '1st Floor Hallway', value: '1'},
-//     {label: '2nd Floor Hallway', value: '1'},
-// ];
-
 const DropdownComponent = () => {
     const [value, setValue] = useState(null);
     const [isFocus, setIsFocus] = useState(false);

@@ -15,7 +15,7 @@ const MyReportData = () => {
                 const userId = await getCookie('userid');
                 const response = await axios.get(`https://au-rep-server.onrender.com/getReports/${userId}/${selectedValue}`);
                 // const response = await axios.get(`http://localhost:3000/getReports/${userId}/${selectedValue}`);
-                setReportsData(response.data);
+                setReportsData(response.data.reverse());
             } catch (error) {
                 console.error('Error fetching report data:', error);
             }

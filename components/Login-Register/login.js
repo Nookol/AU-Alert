@@ -5,8 +5,8 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from "@/auth/firebase";
 import colors from "@/constants/Colors";
 import { setCookie } from "@/api/cookies";
-import firebase from "firebase/compat";
 import {getUserData} from "./../Messaging/saveUserData/saveUserData";
+import PasswordReset from "@/components/PasswordReset/PasswordReset";
 
 const Login = () => {
     const navigation = useNavigation();
@@ -45,12 +45,16 @@ const Login = () => {
     };
 
     const handleReset = async () => {
-        try {
-            await firebase.auth.sendPasswordResetEmail(auth, email);
-            Alert.alert("YAY!")
-        } catch (error) {
-            Alert.alert(error.message)
-        }
+        // try {
+        //     alert()
+        //     await firebase.auth.sendPasswordResetEmail(auth, email);
+        //     Alert.alert("YAY!")
+        // } catch (error) {
+        //     Alert.alert(error.message)
+        // }
+        return(
+            <PasswordReset/>
+        )
     };
 
     return (
@@ -81,7 +85,9 @@ const Login = () => {
             <Button title="Bypass to app" onPress={() => {
                 navigation.navigate('Home')
             }} />
-            <Button title="Password Reset" onPress={handleReset} />
+            <Button title="Password Reset" onPress={
+                ()=>navigation.navigate('ResetPassword')
+            } />
             {loading && <ActivityIndicator size="large" color="#0000ff" />}
         </View>
     );

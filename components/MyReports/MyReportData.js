@@ -47,7 +47,7 @@ const MyReportData = () => {
                                 const room = locationObject[1]
                                 return (
                                     <View key={data.reportid}>
-                                        <ReportsDisplay date={data.timestamp} title={data.title} building={building} room={room} image={data.image} status={data.status}/>
+                                        <ReportsDisplay date={data.timestamp} updated={data.updated_at} title={data.title} building={building} room={room} image={data.image} status={data.status} notes={data.notes}/>
                                     </View>
                                 );
                             }

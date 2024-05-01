@@ -1,13 +1,16 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import Filter from "bad-words";
 
 const ChatBox = ({ message, firstname,lastname,timeposted }) => {
 
   const fullName = firstname+" "+lastname;
+  const filter = new Filter();
+  const cleanMes = filter.clean(message);
   return (
     <View style={styles.container}>
       <View style={styles.messageContainer}>
-        <Text style={styles.messageText}>{message}</Text>
+        <Text style={styles.messageText}>{cleanMes}</Text>
       </View>
       <Text style={styles.senderName}>sent by: {fullName}</Text>
       <Text style={styles.senderName}>{timeposted}</Text>

@@ -30,18 +30,23 @@ const Register = () => {
 
     const handleRegister = async () => {
         const { email, password, confirmPassword, fName, lName } = registration;
-        if (! await isAuEmail(email, fName, lName)) {
-            alert("Registration Failed", "Invalid Email: must be an Aurora.edu authorized email.");
-            return;
+        const registrationErrors = [];
+
+        if (!isAuEmail(email)) {
+            registrationErrors.push("Invalid Email: must be an Aurora.edu authorized email.");
         }
         if (!email || !password || !confirmPassword || !fName || !lName) {
-            alert("Registration Failed", "All fields are required.");
-            return;
+            registrationErrors.push("All fields are required.");
         }
         if (password !== confirmPassword) {
-            alert("Registration Failed", "Passwords do not match.");
+            registrationErrors.push("Passwords do not match.");
+        }
+
+        if (registrationErrors.length > 0) {
+            Alert.alert("Registration Failed", registrationErrors.join("\n"));
             return;
         }
+
         setLoading(true);
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Image, StyleSheet, Text, View, Modal, Button } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 
-const ReportsDisplay = ({ date, title, status, image, building, room }) => {
+const ReportsDisplay = ({ date, title, status, image, building, room, notes, updated }) => {
     const [modalVisible, setModalVisible] = useState(false);
 
     const colorData = getStatusColor(status);
@@ -42,10 +42,20 @@ const ReportsDisplay = ({ date, title, status, image, building, room }) => {
             <Text style={styles.title}>{title}</Text>
             <Text style={styles.location}>Building: {building}</Text>
             <Text style={styles.location}>Room: {room}</Text>
+            {notes && Array.isArray(notes) && notes[0] != null ? (
+                <>
+                    <Text style={styles.location}>Notes: </Text>
+                    {notes.filter(item => item !== null).map((item, index) => (
+                        <Text key={index} style={styles.noteItem}>{item}</Text>
+                    ))}
+                </>
+            ) : null}
+
+
             <Text style={{ color: colorData }}>Status: {status}</Text>
             <View>
                 <Text style={{ color: 'grey', fontSize:9 }}>Created: {formatDate(date)}</Text>
-                <Text style={{ color: 'grey', fontSize:9 }}>Last Updated: {formatDate(date)}</Text>
+                <Text style={{ color: 'grey', fontSize:9 }}>Last Updated: {formatDate(updated)}</Text>
             </View>
 
             <Modal

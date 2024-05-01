@@ -63,28 +63,28 @@ export default function ReportForm() {
     };
 
     const submitForm = async () => {
-        if (!reportFormData.title || !reportFormData.description || !reportFormData.location) {
+        if (!reportFormData.title || !reportFormData.description || !reportFormData.location || !reportFormData.locationSpec) {
             alert("Title, description, and location are required fields.");
             return;
         }
 
         setLoading(true);
         let uploadResponse;
-        if (imageUri == null)
-            return;
-        try {
-            uploadResponse = await uploadPhoto(imageUri);
-        } catch (error) {
-            console.error('Error in form submission:', error);
-            alert("Error occurred. Please try again.")
-        } finally {
-            setLoading(false);
+        if (imageUri != null){
+            try {
+                uploadResponse = await uploadPhoto(imageUri);
+            } catch (error) {
+                console.error('Error in form submission:', error);
+                alert("Error occurred. Please try again.")
+            } finally {
+                setLoading(false);
+            }
         }
 
         try {
             const postObject = {
                 userId: user.userid || 1,
-                image: uploadResponse || "none",
+                image: uploadResponse || null,
                 title: reportFormData.title || null,
                 location: reportFormData.location || null,
                 locationSpec: reportFormData.locationSpec || null,
@@ -96,6 +96,8 @@ export default function ReportForm() {
             console.log('Response data:', response.data);
         } catch (error) {
             console.error('Error posting data:', error);
+        }finally {
+            setLoading(false);
         }
     };
     const navigation = useNavigation();
@@ -179,6 +181,7 @@ const DropdownComponent = ({updateLocation, updateLocationSpec}) => {
         setLocationValue(location);
         updateLocation(location);
         setIsFocus(false);
+        handleLocationSpecChange("")
         fetchBuildingData(location);
     };
 

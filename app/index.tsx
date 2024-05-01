@@ -1,7 +1,9 @@
 import React from "react";
 import {StyleSheet, View, KeyboardAvoidingView, Platform} from "react-native";
 import Login from "../components/Login-Register/login";
-
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(['Asyncstorage: ...']); // Ignore log notification by message
+LogBox.ignoreAllLogs(); //Ignore all log notifications
 const App = () => {
     return (
         <KeyboardAvoidingView

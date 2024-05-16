@@ -5,11 +5,9 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../auth/firebase';
 import colors from '../constants/Colors';
 import axios from "axios";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getUserData } from "../components/Messaging/saveUserData/saveUserData";
 import { isAuEmail } from "../components/Login-Register/userEmailFilter";
 import { setCookie } from "../api/cookies";
-import { sendEmailVerification } from "@firebase/auth";
 
 const Register = () => {
     const navigation = useNavigation();

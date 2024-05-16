@@ -13,15 +13,3 @@ const firebaseConfig = {
 
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-
-
-// const email = document.getElementById("email").value;
-// sendPasswordResetEmail(auth, email)
-//     .then(data => {
-//     console.log(data);
-//     alert("Email Sent")
-//     }).catch((error) => {
-//         const errorCode = error.code;
-//         const errorMessage = error.message;
-//         alert(errorMessage);
-// })
